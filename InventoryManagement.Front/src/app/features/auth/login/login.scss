@@ -1,0 +1,18 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh; /* Centrado vertical */
+  background-color: #fafafa;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.full-width {
+  width: 100%;
+  margin-top: 10px;
+}
