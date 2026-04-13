@@ -10,27 +10,38 @@
 </mat-progress-bar>
 }
 
-<!-- Si hay un usuario logueado, muestra la barra de navegación con opciones según su rol. -->
+<!-- Si hay un usuario logueado, muestra la barra de navegación con opciones
+  según su rol. -->
+
 @let user = (store.currentUser$ | async);
 @if(user){
-<mat-toolbar color="primary">
-  <span>Inventory Management</span>
-  
-  <span class="spacer"></span> <button mat-button routerLink="/home">Inicio</button>
+<mat-toolbar class="app-toolbar">
+  <div class="brand-block">
+    <span class="brand-title">{{ sistemaNombre }}</span>
+    <!-- <span class="brand-subtitle">Modulo {{ sistemaPrefijo }}</span> -->
+  </div>
 
-  @if(store.isAdmin$ | async){
-  <button mat-button routerLink="/usuarios">Gestión</button>}
-  
-  <span style="font-size: 14px; margin: 0 15px;">Hola, {{ user.dsNombre }}</span>
-  
-  <button mat-icon-button (click)="store.logout()" matTooltip="Cerrar Sesión">
+  <span class="spacer"></span>
+
+  <span class="welcome">Hola, {{ user.dsNombre }}</span>
+  <button mat-icon-button (click)="store.logout()" matTooltip="Cerrar Sesion">
     <mat-icon>logout</mat-icon>
   </button>
 </mat-toolbar>
-}
 
-<!-- El main tiene una clase no-padding si no hay usuario logueado, 
- para que el contenido ocupe toda la pantalla. -->
-<main [class.no-padding]="!(store.currentUser$ | async)">
+<div class="app-shell">
+  @if(esSistema('PAT')){
+  <aside class="side-menu">
+    <app-pat-menu></app-pat-menu>
+  </aside>
+  }
+
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+} @else {
+<main>
   <router-outlet></router-outlet>
-</main> 
+</main>
+}

@@ -8,6 +8,11 @@ import { Login } from './features/auth/login/login';
 export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'home', component: Inicio },
+  {
+    path: 'patrimonio',
+    loadChildren: () =>
+      import('./features/patrimonio/patrimonio').then((m) => m.PATRIMONIO_ROUTES),
+  },
   { 
     path: 'usuarios', 
     component: UserList,

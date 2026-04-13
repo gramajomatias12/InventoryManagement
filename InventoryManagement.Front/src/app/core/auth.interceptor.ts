@@ -5,16 +5,22 @@ import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('token');
+  const sistema = localStorage.getItem('sistema_prefijo') || 'SIS';
+  const headers: Record<string, string> = {};
 
-  // Si tenemos token, clonamos la petición y le ponemos el header Bearer
+  // Si tenemos token, agregamos header Bearer
   if (token) {
-    const cloned = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    return next(cloned);
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
-  return next(req);
+  // Si la request no trae sistema, usamos el sistema actual guardado
+  if (!req.headers.has('Sistema')) {
+    headers['Sistema'] = sistema;
+  }
+
+  if (Object.keys(headers).length === 0) {
+    return next(req);
+  }
+
+  return next(req.clone({ setHeaders: headers }));
 };

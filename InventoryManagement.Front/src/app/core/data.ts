@@ -16,15 +16,19 @@ export class Data {
 
   constructor(private http: HttpClient) { }
 
-  getEntidad(entidad: string): Observable<any> {
-    return this.http.get(`${this.urlApi}/${entidad}`);
+  private getSistemaActual(): string {
+    return localStorage.getItem('sistema_prefijo') || 'SIS';
   }
 
-  postEntidad(entidad: string, objeto: any): Observable<any> {
-    // Convertimos el objeto a JSON string para que el backend lo reciba como "jsParametro"
-    const jsonString = JSON.stringify(objeto);
-    
-    // En tu backend, el controlador debería tener un método POST que reciba esto
-    return this.http.post(`${this.urlApi}/${entidad}`, { jsonParametros: jsonString });
+  getEntidad(entidad: string, sistema?: string): Observable<any> {
+    const headers = { 'Sistema': sistema || this.getSistemaActual() };
+    return this.http.get(`${this.urlApi}/${entidad}`, { headers });
   }
+
+  postEntidad(entidad: string, objeto: any, sistema?: string): Observable<any> {
+    const headers = { 'Sistema': sistema || this.getSistemaActual() };
+    const body = { jsonParametros: JSON.stringify(objeto) };
+    return this.http.post(`${this.urlApi}/${entidad}`, body, { headers });
+  }
+  
 }

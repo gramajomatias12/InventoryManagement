@@ -57,15 +57,22 @@ export class UserStore {
   }
 
   // Inicia sesión y deja todo listo en memoria y localStorage.
-  login(credenciales: any) {
+  login(credenciales: any, sistemaPrefijo?: string) {
     const authUrl = 'http://localhost:5035/api/Auth/login';
+    const headers = sistemaPrefijo ? { Sistema: sistemaPrefijo } : undefined;
 
-    return this.http.post(authUrl, credenciales).pipe(
+    return this.http.post(authUrl, credenciales, { headers }).pipe(
       tap((res: any) => {
         if (res.token) {
           localStorage.setItem('token', res.token);
           // res.usuario ahora debería ser el objeto que viste en SQL
           localStorage.setItem('user_data', JSON.stringify(res.usuario));
+
+          const sistemaCd = credenciales?.idSistema || credenciales?.cdSistema;
+          if (sistemaCd) {
+            localStorage.setItem('sistema_cd', String(sistemaCd));
+          }
+
           this._currentUser.next(res.usuario);
         }
       })
@@ -76,6 +83,9 @@ export class UserStore {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user_data'); // <-- Limpiamos todo
+    localStorage.removeItem('sistema_prefijo');
+    localStorage.removeItem('sistema_cd');
+    localStorage.removeItem('sistema_descripcion');
     this._currentUser.next(null);
     this.router.navigate(['/login']);
   }

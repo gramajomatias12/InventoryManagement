@@ -1,0 +1,88 @@
+.toolbar-header {
+	border-radius: 12px;
+	margin-bottom: 14px;
+}
+
+.toolbar-title {
+	margin-left: 8px;
+	font-weight: 700;
+}
+
+.spacer {
+	flex: 1 1 auto;
+}
+
+.container {
+	position: relative;
+}
+
+.loading-overlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255, 255, 255, 0.65);
+	z-index: 4;
+	border-radius: 14px;
+}
+
+.edit-container,
+.view-container {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.form-header,
+.profile-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	background: #fff;
+	border: 1px solid #eaeaea;
+	border-radius: 14px;
+	padding: 14px;
+}
+
+.avatar-large {
+	width: 58px;
+	height: 58px;
+	border-radius: 50%;
+	background: #eef1ff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.form-card,
+.info-card {
+	border-radius: 14px;
+	border: 1px solid #ececec;
+}
+
+.section-title,
+.info-item-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
+.full-width {
+	width: 100%;
+}
+
+.toggle-wrap {
+	margin-top: 8px;
+}
+
+.info-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+	gap: 12px;
+}
+
+.info-value {
+	margin: 0;
+}
