@@ -1,0 +1,23 @@
+.adm-menu-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu-title {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.menu-link {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.active-link {
+  border-color: #1976d2;
+  color: #1976d2;
+  background: rgba(25, 118, 210, 0.08);
+}

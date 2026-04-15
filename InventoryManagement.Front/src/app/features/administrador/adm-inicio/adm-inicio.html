@@ -1,0 +1,26 @@
+<section class="adm-inicio">
+  <div class="hero-card">
+    <div>
+      <h1>Administrador</h1>
+      <p>Accede a la gestión de usuarios y sistemas del proyecto.</p>
+    </div>
+  </div>
+
+  <div class="acciones-grid">
+    <mat-card class="accion-card" [routerLink]="['/administrador/usuarios']">
+      <mat-card-content>
+        <mat-icon>group</mat-icon>
+        <h3>Usuarios</h3>
+        <p>Alta, baja y modificación de usuarios.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="accion-card" [routerLink]="['/administrador/sistemas']">
+      <mat-card-content>
+        <mat-icon>apps</mat-icon>
+        <h3>Sistemas</h3>
+        <p>Configuración y mantenimiento de sistemas.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</section>

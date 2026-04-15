@@ -13,6 +13,12 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/patrimonio/patrimonio').then((m) => m.PATRIMONIO_ROUTES),
   },
+  {
+    path: 'administrador',
+    canActivate: [adminGuard],
+    loadChildren: () =>
+      import('./features/administrador/administrador').then((m) => m.ADMINISTRADOR_ROUTES),
+  },
   { 
     path: 'usuarios', 
     component: UserList,

@@ -9,11 +9,12 @@ import { CommonModule } from '@angular/common';
 import { Loading } from './core/loading';
 import { UserStore } from './features/users/user.store';
 import { PatMenu } from './features/patrimonio/pat-menu/pat-menu';
+import { AdmMenu } from './features/administrador/adm-menu/adm-menu';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MatToolbarModule, MatProgressBarModule, MatIconModule, MatButtonModule, MatTooltipModule, PatMenu],
+  imports: [CommonModule, RouterOutlet, MatToolbarModule, MatProgressBarModule, MatIconModule, MatButtonModule, MatTooltipModule, PatMenu, AdmMenu],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

@@ -35,6 +35,11 @@
     <app-pat-menu></app-pat-menu>
   </aside>
   }
+  @else if(esSistema('ADM')){
+  <aside class="side-menu">
+    <app-adm-menu></app-adm-menu>
+  </aside>
+  }
 
   <main class="app-content">
     <router-outlet></router-outlet>

@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ data ? 'Editar Sistema' : 'Nuevo Sistema' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="sistemaForm" class="sistema-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Descripción</mat-label>
+      <input matInput formControlName="descripcion" placeholder="Ej. Administrador">
+      @if(sistemaForm.get('descripcion')?.hasError('required')){
+        <mat-error>La descripción es obligatoria</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Prefijo</mat-label>
+      <input matInput formControlName="prefijo" maxlength="10" placeholder="Ej. ADM">
+      @if(sistemaForm.get('prefijo')?.hasError('required')){
+        <mat-error>El prefijo es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Estado</mat-label>
+      <mat-select formControlName="icBaja">
+        <mat-option [value]="false">Activo</mat-option>
+        <mat-option [value]="true">Inactivo</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-button color="primary" (click)="guardar()" [disabled]="sistemaForm.invalid">Guardar</button>
+</mat-dialog-actions>

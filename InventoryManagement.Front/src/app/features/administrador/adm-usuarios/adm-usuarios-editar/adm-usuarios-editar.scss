@@ -1,0 +1,73 @@
+.toolbar-header {
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.toolbar-title {
+  margin-left: 8px;
+  font-weight: 700;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.form-header,
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.avatar-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef4ff;
+}
+
+.form-grid,
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-card,
+.info-card {
+  border-radius: 14px;
+}
+
+.toggle-wrap {
+  margin-top: 10px;
+}
+
+.info-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-value {
+  margin: 10px 0 0;
+}

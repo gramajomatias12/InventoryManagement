@@ -119,6 +119,8 @@ export class Login implements OnInit {
     switch ((prefijo || '').toUpperCase()) {
       case 'PAT':
         return '/patrimonio';
+      case 'ADM':
+        return '/administrador';
       default:
         return '/home';
     }

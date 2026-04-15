@@ -1,0 +1,104 @@
+<mat-toolbar class="toolbar-header">
+  <mat-toolbar-row>
+    <button mat-icon-button routerLink="/administrador/sistemas" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <mat-icon>apps</mat-icon>
+    <span class="toolbar-title">{{ getTitulo() }}</span>
+    <span class="spacer"></span>
+
+    @if(!modoEditar){
+      <button mat-raised-button color="primary" (click)="editar()">
+        <mat-icon>edit</mat-icon>
+        Editar
+      </button>
+    }
+    @else {
+      <button mat-stroked-button [hidden]="!form.value.id" (click)="cancelar()" class="btn-cancel">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid">
+        <mat-icon>save</mat-icon>
+        Guardar
+      </button>
+    }
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<div class="container">
+  @if(loading.loading$ | async){
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  @if(modoEditar){
+    <div class="edit-container">
+      <div class="form-header">
+        <div class="avatar-large">
+          <mat-icon>apps</mat-icon>
+        </div>
+        <div class="header-info">
+          <h2>{{ form.value.id ? 'Editar Sistema' : 'Nuevo Sistema' }}</h2>
+          <p>Complete la información del sistema</p>
+        </div>
+      </div>
+
+      <mat-card class="form-card">
+        <mat-card-content>
+          <form [formGroup]="form" (ngSubmit)="guardar()">
+            <mat-form-field class="full-width" appearance="outline">
+              <mat-label>Descripción</mat-label>
+              <input matInput formControlName="descripcion" placeholder="Ingrese una descripción">
+            </mat-form-field>
+
+            <mat-form-field class="full-width" appearance="outline">
+              <mat-label>Prefijo</mat-label>
+              <input matInput formControlName="prefijo" placeholder="Ej. ADM">
+            </mat-form-field>
+
+            <div class="toggle-wrap">
+              <mat-slide-toggle formControlName="icBaja">Marcar como baja</mat-slide-toggle>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+  @else {
+    <div class="view-container">
+      <div class="profile-header">
+        <div class="avatar-large">
+          <mat-icon>apps</mat-icon>
+        </div>
+        <div class="profile-info">
+          <h1>{{ form.value.descripcion }}</h1>
+          <p class="profile-type">Sistema registrado</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <mat-card class="info-card">
+          <mat-card-content>
+            <div class="info-item-header">
+              <mat-icon>tag</mat-icon>
+              <h3>Prefijo</h3>
+            </div>
+            <p class="info-value">{{ form.value.prefijo || 'Sin prefijo' }}</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="info-card">
+          <mat-card-content>
+            <div class="info-item-header">
+              <mat-icon>toggle_on</mat-icon>
+              <h3>Estado</h3>
+            </div>
+            <p class="info-value">{{ form.value.icBaja ? 'Inactivo' : 'Activo' }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>
