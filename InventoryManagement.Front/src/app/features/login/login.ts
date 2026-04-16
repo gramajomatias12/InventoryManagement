@@ -48,7 +48,13 @@ export class Login implements OnInit {
     const token = localStorage.getItem('token');
     if (token) {
       const prefijo = localStorage.getItem('sistema_prefijo') || 'SIS';
-      this.router.navigate([this.getRutaSistema(prefijo)]);
+      const rutaDestino = this.getRutaSistema(prefijo);
+      if (!rutaDestino) {
+        this.store.logout();
+        return;
+      }
+
+      this.router.navigate([rutaDestino]);
     }
   }
 
@@ -60,14 +66,18 @@ export class Login implements OnInit {
         return;
       }
 
-      localStorage.setItem('sistema_cd', String(sistemaSeleccionado.id));
-      localStorage.setItem('sistema_prefijo', sistemaSeleccionado.prefijo);
-      localStorage.setItem('sistema_descripcion', sistemaSeleccionado.descripcion);
+      const rutaDestino = this.getRutaSistema(sistemaSeleccionado.prefijo);
+      if (!rutaDestino) {
+        console.error('Sistema sin módulo frontend disponible:', sistemaSeleccionado.prefijo);
+        return;
+      }
 
       this.store.login(this.loginForm.value, sistemaSeleccionado.prefijo).subscribe({
-        next: (res) => {
-          // Entra al sistema seleccionado
-          this.router.navigate([this.getRutaSistema(sistemaSeleccionado.prefijo)]);
+        next: () => {
+          localStorage.setItem('sistema_cd', String(sistemaSeleccionado.id));
+          localStorage.setItem('sistema_prefijo', sistemaSeleccionado.prefijo);
+          localStorage.setItem('sistema_descripcion', sistemaSeleccionado.descripcion);
+          this.router.navigate([rutaDestino]);
         },
         error: (err) => {
           // Si entra acá, es porque .NET devolvió BadRequest()
@@ -115,14 +125,14 @@ export class Login implements OnInit {
     return this.sistemas.find(s => s.id === id);
   }
 
-  private getRutaSistema(prefijo: string): string {
+  private getRutaSistema(prefijo: string): string | null {
     switch ((prefijo || '').toUpperCase()) {
       case 'PAT':
         return '/patrimonio';
       case 'ADM':
         return '/administrador';
       default:
-        return '/home';
+        return null;
     }
   }
   

@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,6 +22,7 @@ export class App {
   protected readonly title = signal('Inventory Management');
   public loadingService = inject(Loading);
   public store = inject(LoginStore);
+  private router = inject(Router);
 
   get sistemaPrefijo(): string {
     return (localStorage.getItem('sistema_prefijo') || 'SIS').toUpperCase();
@@ -33,5 +34,29 @@ export class App {
 
   esSistema(prefijo: string): boolean {
     return this.sistemaPrefijo === prefijo.toUpperCase();
+  }
+
+  private getRutaBaseByPrefijo(prefijo: string): string | null {
+    switch (prefijo.toUpperCase()) {
+      case 'PAT':
+        return '/patrimonio';
+      case 'ADM':
+        return '/administrador';
+      default:
+        return null;
+    }
+  }
+
+  estaEnRuta(prefijo: string): boolean {
+    const basePath = this.getRutaBaseByPrefijo(prefijo);
+    if (!basePath) {
+      return false;
+    }
+
+    return this.router.url === basePath || this.router.url.startsWith(`${basePath}/`);
+  }
+
+  mostrarShell(user: unknown): boolean {
+    return !!user && !this.router.url.startsWith('/login') && (this.estaEnRuta('PAT') || this.estaEnRuta('ADM'));
   }
 }

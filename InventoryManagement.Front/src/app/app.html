@@ -14,7 +14,7 @@
   según su rol. -->
 
 @let user = (store.currentUser$ | async);
-@if(user){
+@if(mostrarShell(user)){
 <mat-toolbar class="app-toolbar">
   <div class="brand-block">
     <span class="brand-title">{{ sistemaNombre }}</span>
@@ -23,19 +23,19 @@
 
   <span class="spacer"></span>
 
-  <span class="welcome">Hola, {{ user.dsNombre }}</span>
+  <span class="welcome">Hola, {{ user?.dsNombre }}</span>
   <button mat-icon-button (click)="store.logout()" matTooltip="Cerrar Sesion">
     <mat-icon>logout</mat-icon>
   </button>
 </mat-toolbar>
 
 <div class="app-shell">
-  @if(esSistema('PAT')){
+  @if(estaEnRuta('PAT')){
   <aside class="side-menu">
     <app-pat-menu></app-pat-menu>
   </aside>
   }
-  @else if(esSistema('ADM')){
+  @else if(estaEnRuta('ADM')){
   <aside class="side-menu">
     <app-adm-menu></app-adm-menu>
   </aside>

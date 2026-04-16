@@ -30,6 +30,6 @@ export const adminGuard: CanActivateFn = () => {
   }
 
   console.error('Acceso denegado - Se requiere rol de Admin');
-  router.navigate(['/home']);
+  router.navigate(['/login']);
   return false;
 };
