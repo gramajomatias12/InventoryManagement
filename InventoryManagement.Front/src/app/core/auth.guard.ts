@@ -1,21 +1,34 @@
-import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { UserStore } from '../features/users/user.store';
-import { first, map } from 'rxjs';
+import { inject } from '@angular/core';
+
+function getStoredUser() {
+  const rawUser = localStorage.getItem('user_data');
+  return rawUser ? JSON.parse(rawUser) : null;
+}
+
+export const authGuard: CanActivateFn = () => {
+  const router = inject(Router);
+  const token = localStorage.getItem('token');
+  const user = getStoredUser();
+
+  if (token && user) {
+    return true;
+  }
+
+  console.error('Acceso denegado - Se requiere iniciar sesión');
+  router.navigate(['/login']);
+  return false;
+};
 
 // Este guard se encarga de proteger las rutas que solo los Admins pueden ver.
-
-export const adminGuard: CanActivateFn = (route, state) => {
-  const store = inject(UserStore);
+export const adminGuard: CanActivateFn = () => {
   const router = inject(Router);
-
-  // Obtenemos el valor actual del usuario
-  const user = localStorage.getItem('user_data') ? JSON.parse(localStorage.getItem('user_data')!) : null;
+  const user = getStoredUser();
 
   if (user && Number(user.cdRol) === 1) {
     return true;
   }
-  console.log(user)
+
   console.error('Acceso denegado - Se requiere rol de Admin');
   router.navigate(['/home']);
   return false;
