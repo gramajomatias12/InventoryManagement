@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { Loading } from './core/loading';
-import { UserStore } from './features/users/user.store';
+import { LoginStore } from './features/login/login.store';
 import { PatMenu } from './features/patrimonio/pat-menu/pat-menu';
 import { AdmMenu } from './features/administrador/adm-menu/adm-menu';
 
@@ -21,7 +21,7 @@ import { AdmMenu } from './features/administrador/adm-menu/adm-menu';
 export class App {
   protected readonly title = signal('Inventory Management');
   public loadingService = inject(Loading);
-  public store = inject(UserStore);
+  public store = inject(LoginStore);
 
   get sistemaPrefijo(): string {
     return (localStorage.getItem('sistema_prefijo') || 'SIS').toUpperCase();

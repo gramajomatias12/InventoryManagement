@@ -23,7 +23,10 @@ export class AdministradorStore {
   private readonly _roles = new BehaviorSubject<any[]>([]);
   public readonly roles$ = this._roles.asObservable();
 
-  constructor(private data: Data, private loading: Loading) {}
+  constructor(
+    private data: Data,
+    private loading: Loading,
+  ) {}
 
   loadSistemas() {
     this.loading.show();

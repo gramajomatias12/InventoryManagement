@@ -5,11 +5,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { UserStore } from '../users/user.store';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from "@angular/material/select";
 import { Data } from '../../core/data';
+import { LoginStore } from './login.store';
 
 interface Sistema {
   id: number;
@@ -29,7 +29,7 @@ interface Sistema {
 
 export class Login implements OnInit {
   private fb = inject(FormBuilder);
-  private store = inject(UserStore);
+  private store = inject(LoginStore);
   private router = inject(Router);
   hide = signal(true);
   public sistemas: Sistema[] = [];
