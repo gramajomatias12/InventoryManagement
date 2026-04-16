@@ -13,8 +13,9 @@ BEGIN
     SET NOCOUNT ON;
 
     -- 1. Declaramos variables para extraer los datos del JSON
-    DECLARE @cdSistema INT,
+        DECLARE @cdSistema INT,
             @idSistema INT,
+            @id INT,
             @descripcion NVARCHAR(100),
             @prefijo NVARCHAR(10),
             @icBaja BIT;
@@ -23,6 +24,7 @@ BEGIN
     SELECT
         @cdSistema = cdSistema,
         @idSistema = idSistema,
+        @id = id,
         @descripcion = descripcion,
         @prefijo = prefijo,
         @icBaja = icBaja
@@ -30,13 +32,14 @@ BEGIN
     WITH (
         cdSistema INT,
         idSistema INT,
+        id INT,
         descripcion NVARCHAR(100),
         prefijo NVARCHAR(10),
         icBaja BIT
     );
 
-    -- Compatibilidad: si viene idSistema, lo usamos como cdSistema
-    SET @cdSistema = ISNULL(@cdSistema, @idSistema);
+    -- Compatibilidad: acepta cdSistema, idSistema o id
+    SET @cdSistema = COALESCE(@cdSistema, @idSistema, @id);
 
     IF @icBaja IS NULL
         SET @icBaja = 0;
