@@ -1,30 +1,41 @@
-<nav class="adm-menu-wrap">
-  <h3 class="menu-title">Administrador</h3>
+<section class="menu-panel administrador-panel">
+  <div class="menu-header">
+    <p class="menu-eyebrow">Centro de control</p>
+    <h2>Administrador</h2>
+    <p>Gestion centralizada de accesos, sistemas y configuracion operativa.</p>
+  </div>
 
-  <a
-    mat-stroked-button
-    class="menu-link"
-    routerLink="/administrador/inicio"
-    routerLinkActive="active-link">
-    <mat-icon>home</mat-icon>
-    Inicio
-  </a>
+  <nav class="menu-nav" aria-label="Menu de Administracion">
+    <a class="menu-link" routerLink="/administrador/inicio" routerLinkActive="active-link">
+      <span class="menu-icon"><mat-icon>space_dashboard</mat-icon></span>
+      <span class="menu-copy">
+        <span class="menu-title">Panel</span>
+        <span class="menu-text">Vista general del modulo y accesos directos.</span>
+      </span>
+    </a>
 
-  <a
-    mat-stroked-button
-    class="menu-link"
-    routerLink="/administrador/usuarios"
-    routerLinkActive="active-link">
-    <mat-icon>group</mat-icon>
-    Usuarios
-  </a>
+    <a class="menu-link" routerLink="/administrador/usuarios" routerLinkActive="active-link">
+      <span class="menu-icon"><mat-icon>group</mat-icon></span>
+      <span class="menu-copy">
+        <span class="menu-title">Usuarios</span>
+        <span class="menu-text">Altas, permisos y mantenimiento de cuentas.</span>
+      </span>
+    </a>
 
-  <a
-    mat-stroked-button
-    class="menu-link"
-    routerLink="/administrador/sistemas"
-    routerLinkActive="active-link">
-    <mat-icon>apps</mat-icon>
-    Sistemas
-  </a>
-</nav>
+    <a class="menu-link" routerLink="/administrador/sistemas" routerLinkActive="active-link">
+      <span class="menu-icon"><mat-icon>apps</mat-icon></span>
+      <span class="menu-copy">
+        <span class="menu-title">Sistemas</span>
+        <span class="menu-text">Administracion de modulos, prefijos y disponibilidad.</span>
+      </span>
+    </a>
+  </nav>
+
+  <div class="menu-footer">
+    <div class="insight-card">
+      <span class="insight-label">Atencion</span>
+      <strong>Revisar permisos sensibles</strong>
+      <p>Confirma perfiles administrativos antes de habilitar accesos a produccion.</p>
+    </div>
+  </div>
+</section>

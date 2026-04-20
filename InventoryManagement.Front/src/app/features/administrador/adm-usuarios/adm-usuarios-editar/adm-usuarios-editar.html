@@ -1,32 +1,36 @@
-<mat-toolbar class="toolbar-header">
-  <mat-toolbar-row>
-    <button mat-icon-button routerLink="/administrador/usuarios" class="back-button">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <mat-icon>group</mat-icon>
-    <span class="toolbar-title">{{ getTitulo() }}</span>
-    <span class="spacer"></span>
+<section class="detail-page admin-theme">
+  <header class="detail-hero">
+    <div class="hero-main">
+      <a mat-stroked-button class="back-link" routerLink="/administrador/usuarios">
+        <mat-icon>arrow_back</mat-icon>
+        Volver
+      </a>
+      <span class="hero-kicker">Administrador</span>
+      <h1>{{ getTitulo() }}</h1>
+      <p>Consulta o actualiza la ficha del usuario con una vista mas ordenada para gestion diaria.</p>
+    </div>
 
-    @if(!modoEditar){
-      <button mat-raised-button color="primary" (click)="editar()">
-        <mat-icon>edit</mat-icon>
-        Editar
-      </button>
-    }
-    @else {
-      <button mat-stroked-button [hidden]="!form.value.cdUsuario" (click)="cancelar()" class="btn-cancel">
-        <mat-icon>close</mat-icon>
-        Cancelar
-      </button>
-      <button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid">
-        <mat-icon>save</mat-icon>
-        Guardar
-      </button>
-    }
-  </mat-toolbar-row>
-</mat-toolbar>
+    <div class="hero-actions">
+      @if(!modoEditar){
+        <button mat-flat-button class="primary-action" (click)="editar()">
+          <mat-icon>edit</mat-icon>
+          Editar
+        </button>
+      }
+      @else {
+        <button mat-stroked-button [hidden]="!form.value.cdUsuario" (click)="cancelar()" class="secondary-action btn-cancel">
+          <mat-icon>close</mat-icon>
+          Cancelar
+        </button>
+        <button mat-flat-button class="primary-action" (click)="guardar()" [disabled]="form.invalid">
+          <mat-icon>save</mat-icon>
+          Guardar
+        </button>
+      }
+    </div>
+  </header>
 
-<div class="container">
+  <div class="container">
   @if(loading.loading$ | async){
     <div class="loading-overlay">
       <mat-spinner></mat-spinner>
@@ -35,7 +39,7 @@
 
   @if(modoEditar){
     <div class="edit-container">
-      <div class="form-header">
+      <div class="surface-panel form-header">
         <div class="avatar-large">
           <mat-icon>group</mat-icon>
         </div>
@@ -45,30 +49,55 @@
         </div>
       </div>
 
-      <mat-card class="form-card">
+      <mat-card class="form-card surface-panel">
         <mat-card-content>
+          @if(saveError){
+          <div class="form-feedback error" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ saveError }}</span>
+          </div>
+          }
+
           <form [formGroup]="form" (ngSubmit)="guardar()">
             <div class="form-grid">
               <mat-form-field appearance="outline">
                 <mat-label>Nombre</mat-label>
                 <input matInput formControlName="dsNombre">
+                @if(form.get('dsNombre')?.hasError('required')){
+                  <mat-error>El nombre es obligatorio</mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Apellido</mat-label>
                 <input matInput formControlName="dsApellido">
+                @if(form.get('dsApellido')?.hasError('required')){
+                  <mat-error>El apellido es obligatorio</mat-error>
+                }
               </mat-form-field>
             </div>
 
             <mat-form-field class="full-width" appearance="outline">
               <mat-label>Email</mat-label>
               <input matInput formControlName="dsEmail" type="email">
+              @if(form.get('dsEmail')?.hasError('required')){
+                <mat-error>El email es obligatorio</mat-error>
+              }
+              @if(form.get('dsEmail')?.hasError('email')){
+                <mat-error>Ingresa un email valido</mat-error>
+              }
             </mat-form-field>
 
             <div class="form-grid">
               <mat-form-field appearance="outline">
                 <mat-label>Login</mat-label>
                 <input matInput formControlName="dsLogin">
+                @if(form.get('dsLogin')?.hasError('required')){
+                  <mat-error>El login es obligatorio</mat-error>
+                }
+                @if(form.get('dsLogin')?.hasError('minlength')){
+                  <mat-error>El login debe tener al menos 4 caracteres</mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline">
@@ -78,6 +107,9 @@
                     {{ rol.dsRol }}
                   </mat-option>
                 </mat-select>
+                @if(form.get('cdRol')?.hasError('required')){
+                  <mat-error>Selecciona un rol</mat-error>
+                }
               </mat-form-field>
             </div>
 
@@ -85,11 +117,23 @@
               <mat-form-field appearance="outline">
                 <mat-label>Contraseña</mat-label>
                 <input matInput type="password" formControlName="dsPassword">
+                @if(form.get('dsPassword')?.hasError('required')){
+                  <mat-error>La contraseña es obligatoria para nuevos usuarios</mat-error>
+                }
+                @if(form.get('dsPassword')?.hasError('minlength')){
+                  <mat-error>La contraseña debe tener al menos 4 caracteres</mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Confirmar Contraseña</mat-label>
                 <input matInput type="password" formControlName="confirmarContrasena">
+                @if(form.get('confirmarContrasena')?.hasError('required')){
+                  <mat-error>Confirma la contraseña</mat-error>
+                }
+                @if(form.get('confirmarContrasena')?.hasError('minlength')){
+                  <mat-error>La confirmacion debe tener al menos 4 caracteres</mat-error>
+                }
                 @if(form.hasError('passwordsNoMatch')){
                   <mat-error>Las contraseñas no coinciden</mat-error>
                 }
@@ -106,7 +150,7 @@
   }
   @else {
     <div class="view-container">
-      <div class="profile-header">
+      <div class="surface-panel profile-header">
         <div class="avatar-large">
           <mat-icon>person</mat-icon>
         </div>
@@ -117,7 +161,7 @@
       </div>
 
       <div class="info-grid">
-        <mat-card class="info-card">
+      <mat-card class="info-card surface-panel">
           <mat-card-content>
             <div class="info-item-header">
               <mat-icon>badge</mat-icon>
@@ -127,7 +171,7 @@
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="info-card">
+        <mat-card class="info-card surface-panel">
           <mat-card-content>
             <div class="info-item-header">
               <mat-icon>mail</mat-icon>
@@ -137,7 +181,7 @@
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="info-card">
+        <mat-card class="info-card surface-panel">
           <mat-card-content>
             <div class="info-item-header">
               <mat-icon>toggle_on</mat-icon>
@@ -149,4 +193,5 @@
       </div>
     </div>
   }
-</div>
+  </div>
+</section>

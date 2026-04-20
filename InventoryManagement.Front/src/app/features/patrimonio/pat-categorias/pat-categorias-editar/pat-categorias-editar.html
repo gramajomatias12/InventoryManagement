@@ -1,32 +1,36 @@
-<mat-toolbar class="toolbar-header">
-	<mat-toolbar-row>
-		<button mat-icon-button routerLink="/patrimonio/categorias" class="back-button">
-			<mat-icon>arrow_back</mat-icon>
-		</button>
-		<mat-icon>category</mat-icon>
-		<span class="toolbar-title">{{ getTitulo() }}</span>
-		<span class="spacer"></span>
+<section class="detail-page patrimonio-theme">
+	<header class="detail-hero">
+		<div class="hero-main">
+			<a mat-stroked-button class="back-link" routerLink="/patrimonio/categorias">
+				<mat-icon>arrow_back</mat-icon>
+				Volver
+			</a>
+			<span class="hero-kicker">Patrimonio</span>
+			<h1>{{ getTitulo() }}</h1>
+			<p>Visualiza o edita la categoria con una estructura mas clara para los cambios operativos.</p>
+		</div>
 
-		@if(!modoEditar){
-		<button mat-raised-button color="primary" (click)="editar()">
-			<mat-icon>edit</mat-icon>
-			Editar
-		</button>
-		}
-		@else {
-		<button mat-stroked-button [hidden]="!form.value.id" (click)="cancelar()" class="btn-cancel">
-			<mat-icon>close</mat-icon>
-			Cancelar
-		</button>
-		<button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid">
-			<mat-icon>save</mat-icon>
-			Guardar
-		</button>
-		}
-	</mat-toolbar-row>
-</mat-toolbar>
+		<div class="hero-actions">
+			@if(!modoEditar){
+			<button mat-flat-button class="primary-action" (click)="editar()">
+				<mat-icon>edit</mat-icon>
+				Editar
+			</button>
+			}
+			@else {
+			<button mat-stroked-button [hidden]="!form.value.id" (click)="cancelar()" class="secondary-action btn-cancel">
+				<mat-icon>close</mat-icon>
+				Cancelar
+			</button>
+			<button mat-flat-button class="primary-action" (click)="guardar()" [disabled]="form.invalid">
+				<mat-icon>save</mat-icon>
+				Guardar
+			</button>
+			}
+		</div>
+	</header>
 
-<div class="container">
+	<div class="container">
 	@if(loading.loading$ | async){
 	<div class="loading-overlay">
 		<mat-spinner></mat-spinner>
@@ -35,7 +39,7 @@
 
 	@if(modoEditar){
 	<div class="edit-container">
-		<div class="form-header">
+		<div class="surface-panel form-header">
 			<div class="avatar-large">
 				<mat-icon>category</mat-icon>
 			</div>
@@ -45,8 +49,15 @@
 			</div>
 		</div>
 
-		<mat-card class="form-card">
+		<mat-card class="form-card surface-panel">
 			<mat-card-content>
+				@if(saveError){
+				<div class="form-feedback error" role="alert">
+					<mat-icon>error_outline</mat-icon>
+					<span>{{ saveError }}</span>
+				</div>
+				}
+
 				<form [formGroup]="form" (ngSubmit)="guardar()">
 					<div class="form-section">
 						<div class="section-title">
@@ -77,7 +88,7 @@
 	}
 	@else {
 	<div class="view-container">
-		<div class="profile-header">
+		<div class="surface-panel profile-header">
 			<div class="avatar-large">
 				<mat-icon>category</mat-icon>
 			</div>
@@ -88,7 +99,7 @@
 		</div>
 
 		<div class="info-grid">
-			<mat-card class="info-card">
+			<mat-card class="info-card surface-panel">
 				<mat-card-content>
 					<div class="info-item-header">
 						<mat-icon>tag</mat-icon>
@@ -98,7 +109,7 @@
 				</mat-card-content>
 			</mat-card>
 
-			<mat-card class="info-card">
+			<mat-card class="info-card surface-panel">
 				<mat-card-content>
 					<div class="info-item-header">
 						<mat-icon>toggle_on</mat-icon>
@@ -110,4 +121,5 @@
 		</div>
 	</div>
 	}
-</div>
+	</div>
+</section>

@@ -1,35 +1,40 @@
-<mat-toolbar class="toolbar-header">
-	<mat-toolbar-row>
-		<mat-icon>apps</mat-icon>
-		<span class="toolbar-title">Sistemas</span>
-		<span class="spacer"></span>
-		<button mat-raised-button color="primary" class="btn-nuevo" [routerLink]="['/administrador/sistemas/', 0]">
+<section class="crud-page admin-theme">
+	<header class="section-hero">
+		<div class="hero-copy">
+			<span class="hero-kicker">Administrador</span>
+			<h1>Sistemas</h1>
+			<p>Controla modulos, prefijos y disponibilidad desde una vista mas clara y consistente.</p>
+		</div>
+
+		<a mat-flat-button class="hero-action" [routerLink]="['/administrador/sistemas/', 0]">
 			<mat-icon>add</mat-icon>
 			Nuevo Sistema
-		</button>
-	</mat-toolbar-row>
-</mat-toolbar>
+		</a>
+	</header>
 
-<div class="container">
+	<div class="container">
 	@if(loading.loading$ | async){
-	<div class="loading-container">
-		<mat-spinner></mat-spinner>
-		<p>Cargando sistemas...</p>
+	<div class="feedback-card loading-container">
+		<mat-spinner diameter="42"></mat-spinner>
+		<div>
+			<h2>Cargando sistemas</h2>
+			<p>Estamos recuperando los modulos registrados y su estado operativo.</p>
+		</div>
 	</div>
 	}
 	@else if(sistemas.length === 0){
-	<div class="empty-state">
+	<div class="feedback-card empty-state">
 		<mat-icon class="empty-icon">apps</mat-icon>
 		<h2>No hay sistemas registrados</h2>
-		<p>Comenza agregando el primer sistema</p>
-		<button mat-raised-button color="primary" [routerLink]="['/administrador/sistemas/', 0]">
+		<p>Comienza declarando el primer modulo para ordenar prefijos y accesos desde la base.</p>
+		<button mat-flat-button class="hero-action" [routerLink]="['/administrador/sistemas/', 0]">
 			<mat-icon>add</mat-icon>
 			Crear Primer Sistema
 		</button>
 	</div>
 	}
 	@else {
-	<div class="header-section">
+	<div class="surface-panel header-section">
 		<div class="stats-container">
 			<div class="stat-card">
 				<mat-icon>apps</mat-icon>
@@ -47,20 +52,23 @@
 			</div>
 		</div>
 
-		<mat-form-field class="search-field" appearance="outline">
-			<mat-label>Buscar sistema</mat-label>
-			<input matInput type="search" placeholder="Descripción o prefijo..." [(ngModel)]="filtro">
-			<mat-icon matPrefix>search</mat-icon>
-			@if(filtro){
-			<button mat-icon-button matSuffix (click)="filtro = ''">
-				<mat-icon>close</mat-icon>
-			</button>
-			}
-		</mat-form-field>
+		<div class="search-panel">
+			<span class="panel-tag">Busqueda inteligente</span>
+			<mat-form-field class="search-field" appearance="outline">
+				<mat-label>Buscar sistema</mat-label>
+				<input matInput type="search" placeholder="Descripcion o prefijo..." [(ngModel)]="filtro">
+				<mat-icon matPrefix>search</mat-icon>
+				@if(filtro){
+				<button mat-icon-button matSuffix (click)="filtro = ''">
+					<mat-icon>close</mat-icon>
+				</button>
+				}
+			</mat-form-field>
+		</div>
 	</div>
 
 	@if(filteredItems().length === 0){
-	<div class="no-results">
+	<div class="feedback-card no-results">
 		<mat-icon>search_off</mat-icon>
 		<h3>No se encontraron resultados</h3>
 		<p>No hay sistemas que coincidan con "{{ filtro }}"</p>
@@ -76,17 +84,15 @@
 					<div class="avatar">
 						<mat-icon>apps</mat-icon>
 					</div>
-					<button mat-icon-button (click)="$event.stopPropagation()">
-						<mat-icon>more_vert</mat-icon>
-					</button>
+					<span class="card-chip">{{ getPrefijo(sistema) }}</span>
 				</div>
 				<div class="card-body">
 					<h3 class="categoria-nombre">{{ getNombre(sistema) }}</h3>
-					<p class="categoria-id">Prefijo: {{ getPrefijo(sistema) }}</p>
+					<p class="categoria-id">Modulo registrado para login, navegacion y contexto de sesion.</p>
 				</div>
 			</mat-card-content>
 			<mat-card-actions>
-				<button mat-button color="primary">
+				<button mat-button class="link-action">
 					<mat-icon>visibility</mat-icon>
 					Ver detalles
 				</button>
@@ -96,4 +102,5 @@
 	</div>
 	}
 	}
-</div>
+	</div>
+</section>

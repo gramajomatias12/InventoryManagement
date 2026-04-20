@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AdministradorStore } from '../../administrador.store';
 import { Loading } from '../../../../core/loading';
+import { Notify } from '../../../../core/notify';
 
 const passwordsMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('dsPassword');
@@ -49,6 +50,8 @@ export class AdmUsuariosEditar implements OnInit {
   private readonly router = inject(Router);
   private readonly store = inject(AdministradorStore);
   public readonly loading = inject(Loading);
+  private readonly notify = inject(Notify);
+  public saveError = '';
 
   public modoEditar = true;
   private usuarioOriginal: any = null;
@@ -101,11 +104,13 @@ export class AdmUsuariosEditar implements OnInit {
   }
 
   editar(): void {
+    this.saveError = '';
     this.modoEditar = true;
     this.aplicarValidacionesPassword(false);
   }
 
   cancelar(): void {
+    this.saveError = '';
     if (!this.form.value.cdUsuario) {
       this.router.navigate(['/administrador/usuarios']);
       return;
@@ -130,10 +135,12 @@ export class AdmUsuariosEditar implements OnInit {
   }
 
   guardar(): void {
+    this.saveError = '';
     this.aplicarValidacionesPassword(!this.form.value.cdUsuario);
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.saveError = 'Revisa los campos requeridos antes de guardar el usuario.';
       return;
     }
 
@@ -154,8 +161,17 @@ export class AdmUsuariosEditar implements OnInit {
     }
 
     this.store.saveUsuario(payload).subscribe({
-      next: () => this.router.navigate(['/administrador/usuarios']),
-      error: (err) => console.error('Error guardando usuario:', err),
+      next: () => {
+        this.router.navigate(['/administrador/usuarios']).then((navigated) => {
+          if (navigated) {
+            this.notify.success(raw.cdUsuario ? 'Usuario actualizado correctamente.' : 'Usuario creado correctamente.');
+          }
+        });
+      },
+      error: (err) => {
+        this.saveError = 'No se pudo guardar el usuario. Intenta nuevamente.';
+        console.error('Error guardando usuario:', err);
+      },
     });
   }
 

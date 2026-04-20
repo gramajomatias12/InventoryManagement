@@ -1,1 +1,83 @@
-<p>pat-inicio works!</p>
+<section class="pat-inicio">
+	<header class="hero-card">
+		<div class="hero-copy">
+			<span class="hero-kicker">Modulo Patrimonio</span>
+			<h1>Un punto de partida claro para organizar el inventario.</h1>
+			<p>
+				Centraliza la estructura de categorias, ordena el trabajo operativo y deja preparado el
+				modulo para la carga y seguimiento de bienes.
+			</p>
+
+			<div class="hero-actions">
+				<a mat-flat-button class="primary-action" [routerLink]="['/patrimonio/categorias']">
+					<mat-icon>category</mat-icon>
+					Administrar categorias
+				</a>
+
+				<a mat-stroked-button class="secondary-action" [routerLink]="['/patrimonio/categorias']">
+					<mat-icon>timeline</mat-icon>
+					Ver estructura actual
+				</a>
+			</div>
+		</div>
+
+		<div class="hero-panel">
+			<span class="panel-label">Estado del modulo</span>
+			<strong>Operativo y listo para crecer</strong>
+			<p>La base de navegacion ya esta disponible. El siguiente paso natural es consolidar catalogos y reglas.</p>
+		</div>
+	</header>
+
+	<section class="metrics-grid">
+		@for (metrica of metricas; track metrica.etiqueta) {
+		<article class="metric-card">
+			<span class="metric-value">{{ metrica.valor }}</span>
+			<h3>{{ metrica.etiqueta }}</h3>
+			<p>{{ metrica.detalle }}</p>
+		</article>
+		}
+	</section>
+
+	<section class="content-grid">
+		<div class="quick-actions">
+			<div class="section-heading">
+				<span>Accesos directos</span>
+				<h2>Empieza por lo esencial</h2>
+			</div>
+
+			<div class="action-cards">
+				@for (acceso of accesos; track acceso.titulo) {
+				<mat-card class="action-card">
+					<mat-card-content>
+						<div class="action-icon">
+							<mat-icon>{{ acceso.icono }}</mat-icon>
+						</div>
+						<h3>{{ acceso.titulo }}</h3>
+						<p>{{ acceso.descripcion }}</p>
+						<a mat-button color="primary" [routerLink]="[acceso.ruta]">{{ acceso.accion }}</a>
+					</mat-card-content>
+				</mat-card>
+				}
+			</div>
+		</div>
+
+		<aside class="status-column">
+			<div class="status-card">
+				<span class="section-tag">Checklist</span>
+				<h3>Proximo objetivo recomendado</h3>
+				<p>Definir y ordenar categorias para que el alta de bienes no arrastre inconsistencias.</p>
+				<ul>
+					<li>Revisar nombres y prefijos de categorias</li>
+					<li>Eliminar duplicados antes de crecer</li>
+					<li>Validar permisos de carga por sector</li>
+				</ul>
+			</div>
+
+			<div class="status-card muted">
+				<span class="section-tag">Contexto</span>
+				<h3>Que deberia venir despues</h3>
+				<p>Cuando la base este ordenada, el modulo queda listo para sumar tableros, movimientos y reportes.</p>
+			</div>
+		</aside>
+	</section>
+</section>

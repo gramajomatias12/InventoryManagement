@@ -1,0 +1,60 @@
+.confirm-shell {
+	position: relative;
+	padding-top: 8px;
+}
+
+.confirm-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 6px;
+	border-radius: 999px;
+	background: linear-gradient(90deg, #b65a3d, #d88c52, #f1c27d);
+}
+
+.confirm-title {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 8px 0 0;
+}
+
+.confirm-title span:last-child {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.confirm-title strong {
+	font-size: 24px;
+	letter-spacing: -0.03em;
+	color: #17363d;
+}
+
+.confirm-title small {
+	font-size: 13px;
+	color: #61787c;
+}
+
+.confirm-icon {
+	width: 48px;
+	height: 48px;
+	border-radius: 16px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(135deg, #b65a3d, #d88c52);
+	color: #fff7ec;
+}
+
+.confirm-content {
+	color: #61787c;
+	line-height: 1.6;
+}
+
+.confirm-accept {
+	border-radius: 999px;
+	background: linear-gradient(135deg, #b65a3d, #d88c52);
+	color: #fff7ec;
+}

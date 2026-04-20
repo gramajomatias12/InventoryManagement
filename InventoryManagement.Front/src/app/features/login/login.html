@@ -1,49 +1,102 @@
-<div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>Bienvenido</mat-card-title>
-      <mat-card-subtitle>Ingresa al Sistema</mat-card-subtitle>
-    </mat-card-header>
+<section class="login-shell">
+  <div class="ambient-shape ambient-left"></div>
+  <div class="ambient-shape ambient-right"></div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <mat-card-content>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Usuario</mat-label>
-          <input matInput formControlName="dsLogin" placeholder="Ej. admin">
-        </mat-form-field>
+  <div class="login-layout">
+    <section class="login-hero">
+      <span class="hero-kicker">Inventory Management</span>
+      <h1>Acceso unificado para cada sistema del entorno.</h1>
+      <p>
+        Ingresa una sola vez, elige el modulo con el que vas a trabajar y entra a una experiencia
+        coherente con la navegacion y el contexto del sistema seleccionado.
+      </p>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Contraseña</mat-label>
-          <input matInput formControlName="dsContraseña" [type]="hide() ? 'password' : 'text'">
+      <div class="hero-badges">
+        <div class="hero-badge">
+          <mat-icon>shield</mat-icon>
+          <span>Sesion protegida</span>
+        </div>
+        <div class="hero-badge">
+          <mat-icon>hub</mat-icon>
+          <span>Acceso por sistemas</span>
+        </div>
+      </div>
 
-          <button mat-icon-button matSuffix (click)="togglePassword($event)" type="button">
-            <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      <div class="hero-panel">
+        <span class="panel-label">Que puedes hacer desde aqui</span>
+        <strong>Entrar a Administrador o Patrimonio desde un mismo punto.</strong>
+        <p>La seleccion del sistema define la navegacion inicial y conserva el contexto activo para el resto de la sesion.</p>
+      </div>
+    </section>
+
+    <mat-card class="login-card">
+      <div class="card-accent"></div>
+
+      <mat-card-header>
+        <div mat-card-avatar class="card-avatar">
+          <mat-icon>lock_open</mat-icon>
+        </div>
+        <mat-card-title>Bienvenido</mat-card-title>
+        <mat-card-subtitle>Ingresa con tu usuario y selecciona el sistema</mat-card-subtitle>
+      </mat-card-header>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-card-content>
+          @if(loginError()){
+          <div class="form-feedback error" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ loginError() }}</span>
+          </div>
+          }
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Usuario</mat-label>
+            <input matInput formControlName="dsLogin" placeholder="Ej. admin">
+            @if(loginForm.get('dsLogin')?.hasError('required')){
+            <mat-error>El usuario es obligatorio</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña</mat-label>
+            <input matInput formControlName="dsContraseña" [type]="hide() ? 'password' : 'text'">
+
+            <button mat-icon-button matSuffix (click)="togglePassword($event)" type="button">
+              <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+
+            <mat-error *ngIf="loginForm.get('dsContraseña')?.hasError('required')">
+              La contraseña es obligatoria
+            </mat-error>
+            @if(loginForm.get('dsContraseña')?.hasError('minlength')){
+            <mat-error>La contraseña debe tener al menos 4 caracteres</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Sistema</mat-label>
+            <mat-select formControlName="idSistema">
+              <mat-option *ngFor="let sistema of sistemas" [value]="sistema.id">
+                {{ sistema.descripcion }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="loginForm.get('idSistema')?.hasError('required')">
+              El sistema es obligatorio
+            </mat-error>
+          </mat-form-field>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <div class="actions-copy">
+            <span class="actions-label">Acceso centralizado</span>
+            <p>La ruta inicial se resuelve segun el sistema seleccionado.</p>
+          </div>
+
+          <button mat-flat-button class="submit-button" type="submit" [disabled]="loginForm.invalid || submitting()">
+            {{ submitting() ? 'Ingresando...' : 'Ingresar' }}
           </button>
-
-          <mat-error *ngIf="loginForm.get('dsContraseña')?.hasError('required')">
-            La contraseña es obligatoria
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Sistema</mat-label>
-          <mat-select formControlName="idSistema">
-            <mat-option *ngFor="let sistema of sistemas" [value]="sistema.id">
-              {{ sistema.descripcion }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="loginForm.get('idSistema')?.hasError('required')">
-            El sistema es obligatorio
-          </mat-error>
-        </mat-form-field>
-
-      </mat-card-content>
-
-      <mat-card-actions align="end">
-        <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
-          Ingresar
-        </button>
-      </mat-card-actions>
-    </form>
-  </mat-card>
-</div>
+        </mat-card-actions>
+      </form>
+    </mat-card>
+  </div>
+</section>

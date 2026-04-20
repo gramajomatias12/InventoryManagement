@@ -1,21 +1,33 @@
-<nav class="pat-menu-wrap">
-	<h3 class="menu-title">Patrimonio</h3>
+<section class="menu-panel patrimonio-panel">
+	<div class="menu-header">
+		<p class="menu-eyebrow">Sistema activo</p>
+		<h2>Patrimonio</h2>
+		<p>Controla categorias, activos y el estado operativo del modulo.</p>
+	</div>
 
-	<a
-		mat-stroked-button
-		class="menu-link"
-		routerLink="/patrimonio/inicio"
-		routerLinkActive="active-link">
-		<mat-icon>home</mat-icon>
-		Inicio
-	</a>
+	<nav class="menu-nav" aria-label="Menu de Patrimonio">
+		<a class="menu-link" routerLink="/patrimonio/inicio" routerLinkActive="active-link">
+			<span class="menu-icon"><mat-icon>space_dashboard</mat-icon></span>
+			<span class="menu-copy">
+				<span class="menu-title">Panel</span>
+				<span class="menu-text">Resumen del modulo y accesos rapidos.</span>
+			</span>
+		</a>
 
-	<a
-		mat-stroked-button
-		class="menu-link"
-		routerLink="/patrimonio/categorias"
-		routerLinkActive="active-link">
-		<mat-icon>category</mat-icon>
-		Categorias
-	</a>
-</nav>
+		<a class="menu-link" routerLink="/patrimonio/categorias" routerLinkActive="active-link">
+			<span class="menu-icon"><mat-icon>category</mat-icon></span>
+			<span class="menu-copy">
+				<span class="menu-title">Categorias</span>
+				<span class="menu-text">Organiza las familias y clasificaciones del inventario.</span>
+			</span>
+		</a>
+	</nav>
+
+	<div class="menu-footer">
+		<div class="insight-card">
+			<span class="insight-label">Foco recomendado</span>
+			<strong>Revisar categorias activas</strong>
+			<p>Manten la estructura base antes de seguir con altas masivas.</p>
+		</div>
+	</div>
+</section>

@@ -1,13 +1,13 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, throwError } from 'rxjs';
+import { Notify } from './notify';
 
 // Este interceptor se encarga de manejar los errores HTTP globalmente, 
 // mostrando un mensaje adecuado según el código de error.
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-    const snack = inject(MatSnackBar);
+    const notify = inject(Notify);
 
     return next(req).pipe(
         catchError((error) => {
@@ -29,10 +29,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                 mensaje = error.error; // Mensaje directo de SQL/.NET
             }
 
-            snack.open(mensaje, 'Cerrar', {
-                duration: 5000,
-                panelClass: ['error-snackbar'] // Opcional: para ponerlo rojo con CSS
-            });
+            notify.error(mensaje);
 
             return throwError(() => error);
         })

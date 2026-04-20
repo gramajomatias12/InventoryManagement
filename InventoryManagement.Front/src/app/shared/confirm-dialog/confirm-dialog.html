@@ -1,9 +1,20 @@
-<h2 mat-dialog-title>Confirmar acción</h2>
-<mat-dialog-content>
-    {{ data.mensaje }}
-</mat-dialog-content>
+<div class="confirm-shell">
+    <div class="confirm-bar"></div>
 
-<mat-dialog-actions align="end">
-    <button mat-button (click)="onNoClick()">Cancelar</button>
-    <button mat-raised-button color="warn" [mat-dialog-close]="true">Aceptar</button>
-</mat-dialog-actions>
+    <h2 mat-dialog-title class="confirm-title">
+        <span class="confirm-icon"><mat-icon>warning_amber</mat-icon></span>
+        <span>
+            <strong>Confirmar accion</strong>
+            <small>Verifica la operacion antes de continuar.</small>
+        </span>
+    </h2>
+
+    <mat-dialog-content class="confirm-content">
+        {{ data.mensaje }}
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button (click)="onNoClick()">Cancelar</button>
+        <button mat-flat-button class="confirm-accept" [mat-dialog-close]="true">Aceptar</button>
+    </mat-dialog-actions>
+</div>

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, finalize, map, tap } from 'rxjs';
 import { Loading } from '../../core/loading';
+import { Notify } from '../../core/notify';
 
 export interface UsuarioSesion {
   cdUsuario?: number;
@@ -24,7 +25,8 @@ export class LoginStore {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private loading: Loading
+    private loading: Loading,
+    private notify: Notify,
   ) {}
 
   private getStoredUser(): UsuarioSesion | null {
@@ -60,6 +62,11 @@ export class LoginStore {
     localStorage.removeItem('sistema_cd');
     localStorage.removeItem('sistema_descripcion');
     this._currentUser.next(null);
-    this.router.navigate(['/login']);
+    this.loading.hide();
+    this.router.navigate(['/login']).then((navigated) => {
+      if (navigated) {
+        this.notify.success('Sesion cerrada correctamente.');
+      }
+    });
   }
 }

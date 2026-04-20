@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-adm-sistema-form',
@@ -18,6 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './adm-sistema-form.html',
   styleUrl: './adm-sistema-form.scss',
@@ -25,6 +27,7 @@ import { MatButtonModule } from '@angular/material/button';
 export class AdmSistemaForm {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<AdmSistemaForm>);
+  public saveError = '';
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
@@ -47,8 +50,10 @@ export class AdmSistemaForm {
   }
 
   guardar() {
+    this.saveError = '';
     if (this.sistemaForm.invalid) {
       this.sistemaForm.markAllAsTouched();
+      this.saveError = 'Revisa la descripcion y el prefijo antes de guardar.';
       return;
     }
 

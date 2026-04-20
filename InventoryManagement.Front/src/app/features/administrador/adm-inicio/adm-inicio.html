@@ -1,26 +1,83 @@
 <section class="adm-inicio">
-  <div class="hero-card">
-    <div>
-      <h1>Administrador</h1>
-      <p>Accede a la gestión de usuarios y sistemas del proyecto.</p>
+  <header class="hero-card">
+    <div class="hero-copy">
+      <span class="hero-kicker">Modulo Administrador</span>
+      <h1>Control central para permisos, acceso y configuracion de sistemas.</h1>
+      <p>
+        Gestiona los puntos sensibles de la aplicacion desde una vista mas clara, con accesos rapidos
+        y contexto operativo para reducir errores administrativos.
+      </p>
+
+      <div class="hero-actions">
+        <a mat-flat-button class="primary-action" [routerLink]="['/administrador/usuarios']">
+          <mat-icon>group</mat-icon>
+          Administrar usuarios
+        </a>
+
+        <a mat-stroked-button class="secondary-action" [routerLink]="['/administrador/sistemas']">
+          <mat-icon>apps</mat-icon>
+          Revisar sistemas
+        </a>
+      </div>
     </div>
-  </div>
 
-  <div class="acciones-grid">
-    <mat-card class="accion-card" [routerLink]="['/administrador/usuarios']">
-      <mat-card-content>
-        <mat-icon>group</mat-icon>
-        <h3>Usuarios</h3>
-        <p>Alta, baja y modificación de usuarios.</p>
-      </mat-card-content>
-    </mat-card>
+    <div class="hero-panel">
+      <span class="panel-label">Estado del control</span>
+      <strong>Panel listo para supervision diaria</strong>
+      <p>La operacion critica queda agrupada para revisar permisos, accesos y disponibilidad de modulos.</p>
+    </div>
+  </header>
 
-    <mat-card class="accion-card" [routerLink]="['/administrador/sistemas']">
-      <mat-card-content>
-        <mat-icon>apps</mat-icon>
-        <h3>Sistemas</h3>
-        <p>Configuración y mantenimiento de sistemas.</p>
-      </mat-card-content>
-    </mat-card>
-  </div>
+  <section class="metrics-grid">
+    @for (metrica of metricas; track metrica.etiqueta) {
+    <article class="metric-card">
+      <span class="metric-value">{{ metrica.valor }}</span>
+      <h3>{{ metrica.etiqueta }}</h3>
+      <p>{{ metrica.detalle }}</p>
+    </article>
+    }
+  </section>
+
+  <section class="content-grid">
+    <div class="quick-actions">
+      <div class="section-heading">
+        <span>Accesos directos</span>
+        <h2>Gestiona lo sensible desde un solo lugar</h2>
+      </div>
+
+      <div class="action-cards">
+        @for (acceso of accesos; track acceso.titulo) {
+        <mat-card class="action-card">
+          <mat-card-content>
+            <div class="action-icon">
+              <mat-icon>{{ acceso.icono }}</mat-icon>
+            </div>
+            <h3>{{ acceso.titulo }}</h3>
+            <p>{{ acceso.descripcion }}</p>
+            <a mat-button color="primary" [routerLink]="[acceso.ruta]">{{ acceso.accion }}</a>
+          </mat-card-content>
+        </mat-card>
+        }
+      </div>
+    </div>
+
+    <aside class="status-column">
+      <div class="status-card">
+        <span class="section-tag">Checklist</span>
+        <h3>Revision recomendada</h3>
+        <p>Antes de habilitar cambios mayores, conviene verificar el mapa completo de permisos.</p>
+        <ul>
+          <li>Confirmar roles administrativos activos</li>
+          <li>Revisar accesos de usuarios recientes</li>
+          <li>Validar disponibilidad de sistemas visibles</li>
+        </ul>
+      </div>
+
+      <div class="status-card muted">
+        <span class="section-tag">Contexto</span>
+        <h3>En que enfocarse despues</h3>
+        <p>Cuando el control de acceso este estable, el siguiente paso es profundizar auditoria y trazabilidad.</p>
+      </div>
+    </aside>
+  </section>
 </section>

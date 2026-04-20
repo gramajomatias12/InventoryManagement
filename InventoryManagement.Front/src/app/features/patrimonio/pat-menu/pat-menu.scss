@@ -1,22 +1,128 @@
-.pat-menu-wrap {
+.menu-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+	padding: 24px 20px;
+	min-height: 100%;
+	color: #17363d;
+}
+
+.patrimonio-panel {
+	background:
+		radial-gradient(circle at top right, rgba(255, 196, 112, 0.2), transparent 28%),
+		linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(241, 248, 246, 0.92));
+}
+
+.menu-header h2 {
+	margin: 6px 0;
+	font-size: 28px;
+	letter-spacing: -0.03em;
+}
+
+.menu-header p {
+	margin: 0;
+	color: #5b7376;
+	line-height: 1.45;
+}
+
+.menu-eyebrow {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: #b86e3d;
+}
+
+.menu-nav {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding: 14px;
-}
-
-.menu-title {
-	margin: 4px 0 10px;
-	font-size: 16px;
-	font-weight: 700;
 }
 
 .menu-link {
-	justify-content: flex-start;
-	gap: 8px;
+	display: grid;
+	grid-template-columns: 46px 1fr;
+	gap: 14px;
+	align-items: center;
+	padding: 14px;
+	border-radius: 20px;
+	text-decoration: none;
+	color: inherit;
+	background: rgba(255, 255, 255, 0.62);
+	border: 1px solid rgba(23, 54, 61, 0.08);
+	transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.menu-link:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 16px 28px rgba(23, 54, 61, 0.08);
+}
+
+.menu-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	border-radius: 16px;
+	background: linear-gradient(135deg, #17363d, #2d7b74);
+	color: #fff6ea;
+}
+
+.menu-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.menu-title {
+	font-weight: 800;
+	letter-spacing: -0.01em;
+}
+
+.menu-text {
+	font-size: 13px;
+	line-height: 1.4;
+	color: #61787c;
 }
 
 .active-link {
-	border-color: #3f51b5;
-	color: #3f51b5;
+	border-color: rgba(184, 110, 61, 0.28);
+	background: linear-gradient(135deg, rgba(255, 232, 203, 0.95), rgba(255, 255, 255, 0.95));
+	box-shadow: 0 18px 32px rgba(184, 110, 61, 0.14);
+}
+
+.menu-footer {
+	margin-top: auto;
+}
+
+.insight-card {
+	padding: 16px;
+	border-radius: 22px;
+	background: #17363d;
+	color: #f6faf9;
+	box-shadow: 0 18px 32px rgba(23, 54, 61, 0.16);
+}
+
+.insight-label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.68);
+}
+
+.insight-card strong {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 16px;
+}
+
+.insight-card p {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.45;
+	color: rgba(255, 255, 255, 0.78);
 }

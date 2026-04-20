@@ -1,35 +1,40 @@
-<mat-toolbar class="toolbar-header">
-	<mat-toolbar-row>
-		<mat-icon>category</mat-icon>
-		<span class="toolbar-title">Categorias</span>
-		<span class="spacer"></span>
-		<button mat-raised-button color="primary" class="btn-nuevo" [routerLink]="['/patrimonio/categorias/', 0]">
+<section class="crud-page patrimonio-theme">
+	<header class="section-hero">
+		<div class="hero-copy">
+			<span class="hero-kicker">Patrimonio</span>
+			<h1>Categorias</h1>
+			<p>Ordena la base del modulo con una vista mas clara para busqueda, alta y seguimiento.</p>
+		</div>
+
+		<a mat-flat-button class="hero-action" [routerLink]="['/patrimonio/categorias/', 0]">
 			<mat-icon>add</mat-icon>
 			Nueva Categoria
-		</button>
-	</mat-toolbar-row>
-</mat-toolbar>
+		</a>
+	</header>
 
-<div class="container">
+	<div class="container">
 	@if(loading.loading$ | async){
-	<div class="loading-container">
-		<mat-spinner></mat-spinner>
-		<p>Cargando categorias...</p>
+	<div class="feedback-card loading-container">
+		<mat-spinner diameter="42"></mat-spinner>
+		<div>
+			<h2>Cargando categorias</h2>
+			<p>Estamos preparando la estructura disponible para el modulo.</p>
+		</div>
 	</div>
 	}
 	@else if(categorias.length === 0){
-	<div class="empty-state">
+	<div class="feedback-card empty-state">
 		<mat-icon class="empty-icon">category</mat-icon>
 		<h2>No hay categorias registradas</h2>
-		<p>Comenza agregando la primera categoria del sistema</p>
-		<button mat-raised-button color="primary" [routerLink]="['/patrimonio/categorias/', 0]">
+		<p>Comienza armando la base del inventario para mantener la carga consistente desde el inicio.</p>
+		<button mat-flat-button class="hero-action" [routerLink]="['/patrimonio/categorias/', 0]">
 			<mat-icon>add</mat-icon>
 			Crear Primera Categoria
 		</button>
 	</div>
 	}
 	@else {
-	<div class="header-section">
+	<div class="surface-panel header-section">
 		<div class="stats-container">
 			<div class="stat-card">
 				<mat-icon>inventory_2</mat-icon>
@@ -47,20 +52,23 @@
 			</div>
 		</div>
 
-		<mat-form-field class="search-field" appearance="outline">
-			<mat-label>Buscar categoria</mat-label>
-			<input matInput type="search" placeholder="Nombre de la categoria..." [(ngModel)]="filtro">
-			<mat-icon matPrefix>search</mat-icon>
-			@if(filtro){
-			<button mat-icon-button matSuffix (click)="filtro = ''">
-				<mat-icon>close</mat-icon>
-			</button>
-			}
-		</mat-form-field>
+		<div class="search-panel">
+			<span class="panel-tag">Busqueda inteligente</span>
+			<mat-form-field class="search-field" appearance="outline">
+				<mat-label>Buscar categoria</mat-label>
+				<input matInput type="search" placeholder="Nombre de la categoria..." [(ngModel)]="filtro">
+				<mat-icon matPrefix>search</mat-icon>
+				@if(filtro){
+				<button mat-icon-button matSuffix (click)="filtro = ''">
+					<mat-icon>close</mat-icon>
+				</button>
+				}
+			</mat-form-field>
+		</div>
 	</div>
 
 	@if(filteredItems().length === 0){
-	<div class="no-results">
+	<div class="feedback-card no-results">
 		<mat-icon>search_off</mat-icon>
 		<h3>No se encontraron resultados</h3>
 		<p>No hay categorias que coincidan con "{{ filtro }}"</p>
@@ -76,17 +84,15 @@
 					<div class="avatar">
 						<mat-icon>category</mat-icon>
 					</div>
-					<button mat-icon-button (click)="$event.stopPropagation()">
-						<mat-icon>more_vert</mat-icon>
-					</button>
+					<span class="card-chip">ID {{ getId(cat) }}</span>
 				</div>
 				<div class="card-body">
 					<h3 class="categoria-nombre">{{ getNombre(cat) }}</h3>
-					<p class="categoria-id">ID: {{ getId(cat) }}</p>
+					<p class="categoria-id">Clasificacion disponible para ordenar bienes y reportes.</p>
 				</div>
 			</mat-card-content>
 			<mat-card-actions>
-				<button mat-button color="primary">
+				<button mat-button class="link-action">
 					<mat-icon>visibility</mat-icon>
 					Ver detalles
 				</button>
@@ -96,4 +102,5 @@
 	</div>
 	}
 	}
-</div>
+	</div>
+</section>

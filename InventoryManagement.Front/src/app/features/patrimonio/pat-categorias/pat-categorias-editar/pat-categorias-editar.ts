@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { PatrimonioStore } from '../../patrimonio.store';
 import { Loading } from '../../../../core/loading';
+import { Notify } from '../../../../core/notify';
 
 @Component({
   selector: 'app-pat-categorias-editar',
@@ -38,6 +39,8 @@ export class PatCategoriasEditar implements OnInit {
   private readonly router = inject(Router);
   private readonly store = inject(PatrimonioStore);
   public readonly loading = inject(Loading);
+  private readonly notify = inject(Notify);
+  public saveError = '';
 
   public modoEditar = true;
   private categoriaOriginal: any = null;
@@ -71,10 +74,12 @@ export class PatCategoriasEditar implements OnInit {
   }
 
   editar(): void {
+    this.saveError = '';
     this.modoEditar = true;
   }
 
   cancelar(): void {
+    this.saveError = '';
     if (!this.form.value.id) {
       this.router.navigate(['/patrimonio/categorias']);
       return;
@@ -92,8 +97,10 @@ export class PatCategoriasEditar implements OnInit {
   }
 
   guardar(): void {
+    this.saveError = '';
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.saveError = 'Revisa los campos requeridos antes de guardar la categoria.';
       return;
     }
 
@@ -110,8 +117,17 @@ export class PatCategoriasEditar implements OnInit {
     };
 
     this.store.saveCategoria(payload).subscribe({
-      next: () => this.router.navigate(['/patrimonio/categorias']),
-      error: (err) => console.error('Error guardando categoria:', err),
+      next: () => {
+        this.router.navigate(['/patrimonio/categorias']).then((navigated) => {
+          if (navigated) {
+            this.notify.success(id ? 'Categoria actualizada correctamente.' : 'Categoria creada correctamente.');
+          }
+        });
+      },
+      error: (err) => {
+        this.saveError = 'No se pudo guardar la categoria. Intenta nuevamente.';
+        console.error('Error guardando categoria:', err);
+      },
     });
   }
 

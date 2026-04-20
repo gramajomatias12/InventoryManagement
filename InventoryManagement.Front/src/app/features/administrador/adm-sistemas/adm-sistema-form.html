@@ -1,34 +1,60 @@
-<h2 mat-dialog-title>{{ data ? 'Editar Sistema' : 'Nuevo Sistema' }}</h2>
+<div class="dialog-shell admin-dialog">
+  <div class="dialog-topbar"></div>
 
-<mat-dialog-content>
-  <form [formGroup]="sistemaForm" class="sistema-form">
-    <mat-form-field appearance="outline">
-      <mat-label>Descripción</mat-label>
-      <input matInput formControlName="descripcion" placeholder="Ej. Administrador">
-      @if(sistemaForm.get('descripcion')?.hasError('required')){
-        <mat-error>La descripción es obligatoria</mat-error>
-      }
-    </mat-form-field>
+  <h2 mat-dialog-title class="dialog-title-block">
+    <span class="dialog-icon"><mat-icon>apps</mat-icon></span>
+    <span>
+      <strong>{{ data ? 'Editar Sistema' : 'Nuevo Sistema' }}</strong>
+      <small>Configura descripcion, prefijo y estado operativo.</small>
+    </span>
+  </h2>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Prefijo</mat-label>
-      <input matInput formControlName="prefijo" maxlength="10" placeholder="Ej. ADM">
-      @if(sistemaForm.get('prefijo')?.hasError('required')){
-        <mat-error>El prefijo es obligatorio</mat-error>
-      }
-    </mat-form-field>
+  <mat-dialog-content>
+    @if(saveError){
+      <div class="dialog-feedback error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ saveError }}</span>
+      </div>
+    }
 
-    <mat-form-field appearance="outline">
-      <mat-label>Estado</mat-label>
-      <mat-select formControlName="icBaja">
-        <mat-option [value]="false">Activo</mat-option>
-        <mat-option [value]="true">Inactivo</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
+    <form [formGroup]="sistemaForm" class="sistema-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción</mat-label>
+        <input matInput formControlName="descripcion" placeholder="Ej. Administrador">
+        @if(sistemaForm.get('descripcion')?.hasError('required')){
+          <mat-error>La descripcion es obligatoria</mat-error>
+        }
+        @if(sistemaForm.get('descripcion')?.hasError('minlength')){
+          <mat-error>La descripcion debe tener al menos 3 caracteres</mat-error>
+        }
+      </mat-form-field>
 
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-button color="primary" (click)="guardar()" [disabled]="sistemaForm.invalid">Guardar</button>
-</mat-dialog-actions>
+      <mat-form-field appearance="outline">
+        <mat-label>Prefijo</mat-label>
+        <input matInput formControlName="prefijo" maxlength="10" placeholder="Ej. ADM">
+        @if(sistemaForm.get('prefijo')?.hasError('required')){
+          <mat-error>El prefijo es obligatorio</mat-error>
+        }
+        @if(sistemaForm.get('prefijo')?.hasError('minlength')){
+          <mat-error>El prefijo debe tener al menos 2 caracteres</mat-error>
+        }
+        @if(sistemaForm.get('prefijo')?.hasError('maxlength')){
+          <mat-error>El prefijo no puede superar los 10 caracteres</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select formControlName="icBaja">
+          <mat-option [value]="false">Activo</mat-option>
+          <mat-option [value]="true">Inactivo</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-flat-button class="dialog-save" (click)="guardar()" [disabled]="sistemaForm.invalid">Guardar</button>
+  </mat-dialog-actions>
+</div>

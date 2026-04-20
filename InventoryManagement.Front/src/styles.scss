@@ -37,3 +37,15 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.success-snackbar {
+  --mdc-snackbar-container-color: #17363d;
+  --mdc-snackbar-supporting-text-color: #f7faf9;
+  --mat-snack-bar-button-color: #f1c27d;
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #9c4c36;
+  --mdc-snackbar-supporting-text-color: #fff7f2;
+  --mat-snack-bar-button-color: #ffd7c2;
+}

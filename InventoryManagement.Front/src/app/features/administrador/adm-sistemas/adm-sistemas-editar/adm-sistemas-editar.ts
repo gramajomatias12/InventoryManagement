@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AdministradorStore } from '../../administrador.store';
 import { Loading } from '../../../../core/loading';
+import { Notify } from '../../../../core/notify';
 
 @Component({
   selector: 'app-adm-sistemas-editar',
@@ -38,6 +39,8 @@ export class AdmSistemasEditar implements OnInit {
   private readonly router = inject(Router);
   private readonly store = inject(AdministradorStore);
   public readonly loading = inject(Loading);
+  private readonly notify = inject(Notify);
+  public saveError = '';
 
   public modoEditar = true;
   private sistemaOriginal: any = null;
@@ -73,10 +76,12 @@ export class AdmSistemasEditar implements OnInit {
   }
 
   editar(): void {
+    this.saveError = '';
     this.modoEditar = true;
   }
 
   cancelar(): void {
+    this.saveError = '';
     if (!this.form.value.id) {
       this.router.navigate(['/administrador/sistemas']);
       return;
@@ -95,8 +100,10 @@ export class AdmSistemasEditar implements OnInit {
   }
 
   guardar(): void {
+    this.saveError = '';
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.saveError = 'Revisa la descripcion y el prefijo antes de guardar el sistema.';
       return;
     }
 
@@ -108,8 +115,17 @@ export class AdmSistemasEditar implements OnInit {
     };
 
     this.store.saveSistema(payload).subscribe({
-      next: () => this.router.navigate(['/administrador/sistemas']),
-      error: (err) => console.error('Error guardando sistema:', err),
+      next: () => {
+        this.router.navigate(['/administrador/sistemas']).then((navigated) => {
+          if (navigated) {
+            this.notify.success(payload.id ? 'Sistema actualizado correctamente.' : 'Sistema creado correctamente.');
+          }
+        });
+      },
+      error: (err) => {
+        this.saveError = 'No se pudo guardar el sistema. Intenta nuevamente.';
+        console.error('Error guardando sistema:', err);
+      },
     });
   }
 

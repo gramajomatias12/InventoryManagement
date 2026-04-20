@@ -16,17 +16,26 @@
 @let user = (store.currentUser$ | async);
 @if(mostrarShell(user)){
 <mat-toolbar class="app-toolbar">
+  <div class="toolbar-accent"></div>
+
   <div class="brand-block">
+    <span class="brand-kicker">Inventory Management</span>
     <span class="brand-title">{{ sistemaNombre }}</span>
-    <!-- <span class="brand-subtitle">Modulo {{ sistemaPrefijo }}</span> -->
+    <span class="brand-subtitle">Modulo {{ sistemaPrefijo }}</span>
   </div>
 
   <span class="spacer"></span>
 
-  <span class="welcome">Hola, {{ user?.dsNombre }}</span>
-  <button mat-icon-button (click)="store.logout()" matTooltip="Cerrar Sesion">
-    <mat-icon>logout</mat-icon>
-  </button>
+  <div class="toolbar-actions">
+    <div class="user-panel">
+      <span class="user-label">Sesion activa</span>
+      <span class="welcome">{{ user?.dsNombre }}</span>
+    </div>
+
+    <button mat-icon-button class="logout-button" (click)="store.logout()" matTooltip="Cerrar Sesion">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
 </mat-toolbar>
 
 <div class="app-shell">

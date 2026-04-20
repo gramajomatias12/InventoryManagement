@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from "@angular/material/select";
 import { Data } from '../../core/data';
 import { getRutaSistema } from '../../core/system-routes';
+import { Notify } from '../../core/notify';
 import { LoginStore } from './login.store';
 
 interface Sistema {
@@ -32,7 +33,10 @@ export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private store = inject(LoginStore);
   private router = inject(Router);
+  private notify = inject(Notify);
   hide = signal(true);
+  loginError = signal<string | null>(null);
+  submitting = signal(false);
   public sistemas: Sistema[] = [];
   
   loginForm = this.fb.group({
@@ -60,39 +64,52 @@ export class Login implements OnInit {
   }
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      const sistemaSeleccionado = this.getSistemaSeleccionado();
+    this.loginError.set(null);
 
-      if (!sistemaSeleccionado) {
-        return;
-      }
-
-      const rutaDestino = this.getRutaSistema(sistemaSeleccionado.prefijo);
-      if (!rutaDestino) {
-        console.error('Sistema sin módulo frontend disponible:', sistemaSeleccionado.prefijo);
-        return;
-      }
-
-      this.store.login(this.loginForm.value, sistemaSeleccionado.prefijo).subscribe({
-        next: () => {
-          localStorage.setItem('sistema_cd', String(sistemaSeleccionado.id));
-          localStorage.setItem('sistema_prefijo', sistemaSeleccionado.prefijo);
-          localStorage.setItem('sistema_descripcion', sistemaSeleccionado.descripcion);
-          this.router.navigate([rutaDestino]);
-        },
-        error: (err) => {
-          // Si entra acá, es porque .NET devolvió BadRequest()
-          // Mostramos una alerta o dejamos que tu ErrorInterceptor haga lo suyo
-          
-          //alert('Usuario o contraseña incorrectos');
-          console.error('Login falló:', {
-            status: err?.status,
-            statusText: err?.statusText,
-            detalle: err?.error
-          });
-        }
-      });
+    if (!this.loginForm.valid) {
+      this.loginForm.markAllAsTouched();
+      this.loginError.set('Revisa usuario, contraseña y sistema antes de ingresar.');
+      return;
     }
+
+    const sistemaSeleccionado = this.getSistemaSeleccionado();
+
+    if (!sistemaSeleccionado) {
+      this.loginError.set('Selecciona un sistema valido para continuar.');
+      return;
+    }
+
+    const rutaDestino = this.getRutaSistema(sistemaSeleccionado.prefijo);
+    if (!rutaDestino) {
+      this.loginError.set('El sistema seleccionado no tiene un modulo frontend disponible.');
+      console.error('Sistema sin módulo frontend disponible:', sistemaSeleccionado.prefijo);
+      return;
+    }
+
+    this.submitting.set(true);
+
+    this.store.login(this.loginForm.value, sistemaSeleccionado.prefijo).subscribe({
+      next: () => {
+        localStorage.setItem('sistema_cd', String(sistemaSeleccionado.id));
+        localStorage.setItem('sistema_prefijo', sistemaSeleccionado.prefijo);
+        localStorage.setItem('sistema_descripcion', sistemaSeleccionado.descripcion);
+        this.submitting.set(false);
+        this.router.navigate([rutaDestino]).then((navigated) => {
+          if (navigated) {
+            this.notify.success(`Bienvenido a ${sistemaSeleccionado.descripcion}.`);
+          }
+        });
+      },
+      error: (err) => {
+        this.submitting.set(false);
+        this.loginError.set('No se pudo iniciar sesion. Verifica tus credenciales e intenta nuevamente.');
+        console.error('Login falló:', {
+          status: err?.status,
+          statusText: err?.statusText,
+          detalle: err?.error
+        });
+      }
+    });
   }
 
   // Método para mostrar u ocultar la contraseña en el campo de entrada.
