@@ -42,7 +42,9 @@ La carpeta shared contiene componentes reutilizables, por ejemplo diálogos de c
 2. Selecciona el sistema con el que quiere trabajar.
 3. La aplicación guarda el token, el prefijo del sistema y otros datos de sesión.
 4. Según el prefijo elegido, el usuario es redirigido al módulo correspondiente.
-5. Los interceptores de core se encargan automáticamente de autenticación, loading y manejo de errores.
+5. El shell principal detecta automáticamente si la ruta actual pertenece a un sistema protegido y, si la ruta declara un menú, lo renderiza de forma dinámica.
+6. El login también resuelve el destino a partir de la metadata de rutas, sin hardcodear prefijos en el componente.
+7. Los interceptores de core se encargan automáticamente de autenticación, loading y manejo de errores.
 
 ## Cómo agregar un nuevo sistema al frontend
 
@@ -52,9 +54,8 @@ Paso a paso breve:
 2. Crear el componente principal del módulo y sus rutas hijas.
 3. Agregar, como mínimo, una vista de inicio y, si hace falta, un menú propio.
 4. Registrar la nueva ruta principal en app.routes.ts.
-5. Actualizar la lógica del login para que el prefijo del nuevo sistema redirija a su ruta correspondiente.
+5. En esa misma ruta, definir el prefijo en data.prefijo y, si corresponde, el menú lateral en data.menuComponent.
 6. Si el módulo necesita consumir datos, crear su store y reutilizar los servicios de core, especialmente data y loading.
-7. Si el sistema va a tener navegación lateral propia, incorporarlo también en la vista principal de la aplicación.
 
 ## Convención sugerida para nuevos sistemas
 

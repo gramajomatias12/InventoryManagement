@@ -1,12 +1,12 @@
 USE [DBPrueba]
 GO
-/****** Object:  StoredProcedure [dbo].[SIS_Sistemas_S]    Script Date: 13/04/2026 ******/
+/****** Objeto: StoredProcedure [dbo].[SIS_Sistemas_S] Fecha de script: 20/04/2026 09:39:30 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER PROCEDURE [dbo].[SIS_Sistemas_S]
+ALTER   PROCEDURE [dbo].[SIS_Sistemas_S]
     @jsParametro NVARCHAR(MAX) = NULL -- Recibe el parametro pero puede venir vacio
 AS
 BEGIN
@@ -34,6 +34,7 @@ BEGIN
         SET @cdSistema = TRY_CAST(@jsParametro AS INT);
     END
 
+    select isnull((
     SELECT
         s.cdSistema AS id,
         s.dsSistema AS descripcion,
@@ -43,6 +44,5 @@ BEGIN
     WHERE (@cdSistema IS NULL OR s.cdSistema = @cdSistema)
       AND (@soloActivos IS NULL OR @soloActivos = 0 OR s.icBaja = 0)
     ORDER BY s.dsSistema
-    FOR JSON PATH;
+    FOR JSON PATH),'[]') as items
 END
-GO

@@ -1,6 +1,6 @@
 USE [DBPrueba]
 GO
-/****** Object:  StoredProcedure [dbo].[PAT_Categorias_S]    Script Date: 16/04/2026 13:21:24 ******/
+/****** Objeto: StoredProcedure [dbo].[PAT_Categorias_S] Fecha de script: 20/04/2026 09:45:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -10,11 +10,12 @@ ALTER PROCEDURE [dbo].[PAT_Categorias_S]
     @jsParametro NVARCHAR(MAX) = NULL
 AS
 BEGIN
+    Select isnull((
     SELECT 
         cdCategoria, 
         dsCategoria, 
         icActivo
     FROM PAT_Categorias
     ORDER BY dsCategoria
-    FOR JSON PATH;
+   FOR JSON PATH),'[]') as items
 END;

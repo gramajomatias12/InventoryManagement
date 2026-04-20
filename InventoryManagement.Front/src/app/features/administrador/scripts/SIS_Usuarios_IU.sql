@@ -1,6 +1,6 @@
 USE [DBPrueba]
 GO
-/****** Object:  StoredProcedure [dbo].[SIS_Usuarios_IU]    Script Date: 16/04/2026 12:31:41 ******/
+/****** Objeto: StoredProcedure [dbo].[SIS_Usuarios_IU] Fecha de script: 20/04/2026 10:23:35 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -52,7 +52,7 @@ BEGIN
         INSERT INTO Usuarios (dsLogin, dsContraseña, dsNombre, dsApellido, dsEmail, cdRol, icActivo, dtCreacion)
         VALUES (@dsLogin, @dsPassword, @dsNombre, @dsApellido, @dsEmail, @cdRol, @icActivo, GETDATE());
         
-        SELECT '{"mensaje": "Usuario creado con éxito"}' AS Respuesta;
+        SELECT @cdUsuario=@@IDENTITY
     END
     ELSE
     BEGIN
@@ -67,6 +67,6 @@ BEGIN
             icActivo = @icActivo
         WHERE cdUsuario = @cdUsuario;
 
-        SELECT '{"mensaje": "Usuario actualizado con éxito"}' AS Respuesta;
+        select @cdUsuario as id for json path
     END
 END

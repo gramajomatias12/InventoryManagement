@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from "@angular/material/select";
 import { Data } from '../../core/data';
+import { getRutaSistema } from '../../core/system-routes';
 import { LoginStore } from './login.store';
 
 interface Sistema {
@@ -126,14 +127,7 @@ export class Login implements OnInit {
   }
 
   private getRutaSistema(prefijo: string): string | null {
-    switch ((prefijo || '').toUpperCase()) {
-      case 'PAT':
-        return '/patrimonio';
-      case 'ADM':
-        return '/administrador';
-      default:
-        return null;
-    }
+    return getRutaSistema(this.router.config, prefijo);
   }
   
 }

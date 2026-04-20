@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, Type } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -7,14 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { Loading } from './core/loading';
+import { getMenuComponent, getRutaActual, getRutaSistema } from './core/system-routes';
 import { LoginStore } from './features/login/login.store';
-import { PatMenu } from './features/patrimonio/pat-menu/pat-menu';
-import { AdmMenu } from './features/administrador/adm-menu/adm-menu';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MatToolbarModule, MatProgressBarModule, MatIconModule, MatButtonModule, MatTooltipModule, PatMenu, AdmMenu],
+  imports: [CommonModule, RouterOutlet, MatToolbarModule, MatProgressBarModule, MatIconModule, MatButtonModule, MatTooltipModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -36,17 +35,12 @@ export class App {
     return this.sistemaPrefijo === prefijo.toUpperCase();
   }
 
+  // Obtiene la ruta principal del sistema según el prefijo configurado en app.routes.ts
   private getRutaBaseByPrefijo(prefijo: string): string | null {
-    switch (prefijo.toUpperCase()) {
-      case 'PAT':
-        return '/patrimonio';
-      case 'ADM':
-        return '/administrador';
-      default:
-        return null;
-    }
+    return getRutaSistema(this.router.config, prefijo);
   }
 
+  // Verifica si la ruta actual corresponde al sistema indicado por el prefijo
   estaEnRuta(prefijo: string): boolean {
     const basePath = this.getRutaBaseByPrefijo(prefijo);
     if (!basePath) {
@@ -56,7 +50,19 @@ export class App {
     return this.router.url === basePath || this.router.url.startsWith(`${basePath}/`);
   }
 
+  private getRutaActual() {
+    return getRutaActual(this.router.config, this.router.url);
+  }
+
+  get menuActual(): Type<unknown> | null {
+    return getMenuComponent(this.getRutaActual());
+  }
+
+  private esRutaProtegida(): boolean {
+    return !!this.getRutaActual();
+  }
+
   mostrarShell(user: unknown): boolean {
-    return !!user && !this.router.url.startsWith('/login') && (this.estaEnRuta('PAT') || this.estaEnRuta('ADM'));
+    return !!user && this.esRutaProtegida();
   }
 }

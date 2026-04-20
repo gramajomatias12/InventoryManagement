@@ -30,14 +30,9 @@
 </mat-toolbar>
 
 <div class="app-shell">
-  @if(estaEnRuta('PAT')){
+  @if(menuActual){
   <aside class="side-menu">
-    <app-pat-menu></app-pat-menu>
-  </aside>
-  }
-  @else if(estaEnRuta('ADM')){
-  <aside class="side-menu">
-    <app-adm-menu></app-adm-menu>
+    <ng-container *ngComponentOutlet="menuActual"></ng-container>
   </aside>
   }
 

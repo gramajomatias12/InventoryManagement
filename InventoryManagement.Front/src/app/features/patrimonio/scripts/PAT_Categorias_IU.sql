@@ -1,6 +1,6 @@
 USE [DBPrueba]
 GO
-/****** Object:  StoredProcedure [dbo].[PAT_Categorias_IU]    Script Date: 16/04/2026 13:24:28 ******/
+/****** Objeto: StoredProcedure [dbo].[PAT_Categorias_IU] Fecha de script: 20/04/2026 10:29:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -31,7 +31,7 @@ BEGIN
         INSERT INTO PAT_Categorias (dsCategoria, icActivo)
         VALUES (@dsCategoria, ISNULL(@icActivo, 1));
         
-        SELECT '{"mensaje": "Categoría creada con éxito"}' AS Respuesta;
+        select @cdCategoria=@@IDENTITY
     END
     ELSE
     BEGIN
@@ -40,6 +40,6 @@ BEGIN
             icActivo = @icActivo
         WHERE cdCategoria = @cdCategoria;
 
-        SELECT '{"mensaje": "Categoría actualizada con éxito"}' AS Respuesta;
+        select @cdCategoria as id for json path
     END
 END

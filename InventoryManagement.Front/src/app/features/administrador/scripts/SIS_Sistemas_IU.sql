@@ -1,6 +1,6 @@
 USE [DBPrueba]
 GO
-/****** Object:  StoredProcedure [dbo].[SIS_Sistemas_IU]    Script Date: 13/04/2026 ******/
+/****** Objeto: StoredProcedure [dbo].[SIS_Sistemas_IU] Fecha de script: 20/04/2026 10:27:15 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -50,7 +50,7 @@ BEGIN
         INSERT INTO SIS_Sistemas (dsSistema, dsPrefijo, icBaja)
         VALUES (@descripcion, @prefijo, @icBaja);
 
-        SELECT '{"mensaje": "Sistema creado con exito"}' AS Respuesta;
+        select @cdSistema=@@IDENTITY
     END
     ELSE
     BEGIN
@@ -60,7 +60,6 @@ BEGIN
             icBaja = @icBaja
         WHERE cdSistema = @cdSistema;
 
-        SELECT '{"mensaje": "Sistema actualizado con exito"}' AS Respuesta;
+        select @cdSistema as id for json path
     END
 END
-GO
