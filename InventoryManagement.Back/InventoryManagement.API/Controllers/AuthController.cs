@@ -48,11 +48,20 @@ namespace InventoryManagement.API.Controllers
                 return BadRequest("Contraseña incorrecta");
             }
             
-            // Generamos el token (usando los datos del objeto que acabamos de parsear)
+            // Generamos el token en base al nuevo modelo de perfiles/roles
             string login = usuarioObj.GetProperty("dsLogin").GetString()!;
-            string rol = usuarioObj.GetProperty("dsRol").GetString()!;
+            string perfil = usuarioObj.TryGetProperty("dsPerfil", out var perfilProp)
+                ? perfilProp.GetString() ?? "USER"
+                : "USER";
+            bool isAdmin = usuarioObj.TryGetProperty("isAdmin", out var adminProp) &&
+                           (adminProp.ValueKind == JsonValueKind.True ||
+                           (adminProp.ValueKind == JsonValueKind.Number && adminProp.GetInt32() == 1));
+            int? cdSistema = usuarioObj.TryGetProperty("cdSistema", out var sistemaProp) &&
+                             sistemaProp.ValueKind == JsonValueKind.Number
+                ? sistemaProp.GetInt32()
+                : null;
 
-            string token = _tokenService.GenerarToken(login, rol);
+            string token = _tokenService.GenerarToken(login, perfil, isAdmin, cdSistema);
 
             return Ok(new
             {

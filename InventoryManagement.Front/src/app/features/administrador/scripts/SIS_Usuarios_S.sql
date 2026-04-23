@@ -17,12 +17,9 @@ select isnull((
         u.dsNombre, 
         u.dsApellido, 
         u.dsEmail, 
-        u.cdRol, 
-        r.dsRol, 
         u.icActivo, 
         u.dtCreacion
     FROM Usuarios u
-    INNER JOIN Roles r ON u.cdRol = r.cdRol
     ORDER BY u.dtCreacion DESC
     FOR JSON PATH),'[]') as items
 END;

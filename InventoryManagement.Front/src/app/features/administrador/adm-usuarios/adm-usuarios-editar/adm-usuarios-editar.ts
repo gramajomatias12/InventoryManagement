@@ -55,7 +55,17 @@ export class AdmUsuariosEditar implements OnInit {
 
   public modoEditar = true;
   private usuarioOriginal: any = null;
-  public readonly roles$ = this.store.roles$;
+  public readonly sistemas$ = this.store.sistemas$;
+  public readonly perfiles$ = this.store.perfiles$;
+  public readonly usuariosPerfiles$ = this.store.usuariosPerfiles$;
+  public readonly perfilesRoles$ = this.store.perfilesRoles$;
+
+  public sistemaSeleccionado: any = null;
+  public perfilesAsignados: Set<number> = new Set();
+  public sistemasLista: any[] = [];
+  public usuariosPerfilesLista: any[] = [];
+  public perfilesLista: any[] = [];
+  public perfilesRolesLista: any[] = [];
 
   form = this.fb.group({
     cdUsuario: [0],
@@ -65,8 +75,8 @@ export class AdmUsuariosEditar implements OnInit {
     dsNombre: ['', Validators.required],
     dsApellido: ['', Validators.required],
     dsEmail: ['', [Validators.required, Validators.email]],
-    cdRol: [null, Validators.required],
     icActivo: [true],
+    cdSistema: [null],
   }, {
     validators: passwordsMatchValidator
   });
@@ -92,15 +102,36 @@ export class AdmUsuariosEditar implements OnInit {
         dsNombre: usuario?.dsNombre || '',
         dsApellido: usuario?.dsApellido || '',
         dsEmail: usuario?.dsEmail || '',
-        cdRol: usuario?.cdRol || 0,
         icActivo: !!usuario?.icActivo,
       });
 
       this.aplicarValidacionesPassword(false);
+      if (id !== 0) {
+        this.store.loadUsuariosPerfiles(id);
+      }
     });
 
-    this.store.loadRoles();
+    this.usuariosPerfiles$.subscribe((list) => {
+      this.usuariosPerfilesLista = Array.isArray(list) ? list : [];
+      this.perfilesAsignados = new Set(list.map((up: any) => up.cdPerfil));
+    });
+
+    this.perfiles$.subscribe((list) => {
+      this.perfilesLista = Array.isArray(list) ? list : [];
+    });
+
+    this.perfilesRoles$.subscribe((list) => {
+      this.perfilesRolesLista = Array.isArray(list) ? list : [];
+    });
+
+    this.sistemas$.subscribe((list) => {
+      this.sistemasLista = Array.isArray(list) ? list : [];
+    });
+
     this.store.loadUsuarios();
+    this.store.loadSistemas();
+    this.store.loadPerfiles();
+    this.store.loadPerfilesRoles();
   }
 
   editar(): void {
@@ -125,7 +156,6 @@ export class AdmUsuariosEditar implements OnInit {
         dsNombre: this.usuarioOriginal?.dsNombre || '',
         dsApellido: this.usuarioOriginal?.dsApellido || '',
         dsEmail: this.usuarioOriginal?.dsEmail || '',
-        cdRol: this.usuarioOriginal?.cdRol || 0,
         icActivo: !!this.usuarioOriginal?.icActivo,
       });
     }
@@ -151,7 +181,6 @@ export class AdmUsuariosEditar implements OnInit {
       dsNombre: String(raw.dsNombre || '').trim(),
       dsApellido: String(raw.dsApellido || '').trim(),
       dsEmail: String(raw.dsEmail || '').trim(),
-      cdRol: Number(raw.cdRol || 0),
       icActivo: !!raw.icActivo,
     };
 
@@ -173,6 +202,76 @@ export class AdmUsuariosEditar implements OnInit {
         console.error('Error guardando usuario:', err);
       },
     });
+  }
+
+  onSistemaChange(cdSistema: number): void {
+    this.sistemaSeleccionado = cdSistema;
+    if (cdSistema) {
+      this.store.loadPerfiles(cdSistema);
+    }
+  }
+
+  togglePerfilAsignado(cdPerfil: number, asignar: boolean): void {
+    const cdUsuario = this.form.value.cdUsuario;
+    if (!cdUsuario) return;
+
+    if (asignar) {
+      this.store.saveUsuarioPerfil(cdUsuario, cdPerfil).subscribe({
+        next: () => {
+          this.perfilesAsignados.add(cdPerfil);
+          if (cdUsuario) {
+            this.store.loadUsuariosPerfiles(Number(cdUsuario));
+          }
+          this.notify.success('Perfil asignado correctamente.');
+        },
+        error: (err) => {
+          console.error('Error asignando perfil:', err);
+          this.notify.error('No se pudo asignar el perfil.');
+        }
+      });
+    } else {
+      this.store.deleteUsuarioPerfil(cdUsuario, cdPerfil).subscribe({
+        next: () => {
+          this.perfilesAsignados.delete(cdPerfil);
+          if (cdUsuario) {
+            this.store.loadUsuariosPerfiles(Number(cdUsuario));
+          }
+          this.notify.success('Perfil desasignado correctamente.');
+        },
+        error: (err) => {
+          console.error('Error desasignando perfil:', err);
+          this.notify.error('No se pudo desasignar el perfil.');
+        }
+      });
+    }
+  }
+
+  isPerfilAsignado(cdPerfil: number): boolean {
+    return this.perfilesAsignados.has(cdPerfil);
+  }
+
+  getAccesosPorSistema(): Array<{ sistema: any; perfiles: any[] }> {
+    const mapa = new Map<number, any[]>();
+    const perfilesPorId = new Map<number, any>(this.perfilesLista.map((p: any) => [Number(p.cdPerfil), p]));
+
+    for (const up of this.usuariosPerfilesLista) {
+      const perfil = perfilesPorId.get(Number(up.cdPerfil));
+      if (!perfil) continue;
+      const cdSistema = Number(perfil.cdSistema);
+      const perfiles = mapa.get(cdSistema) || [];
+      perfiles.push(perfil);
+      mapa.set(cdSistema, perfiles);
+    }
+
+    return Array.from(mapa.entries()).map(([cdSistema, perfiles]) => ({
+      sistema: this.sistemasLista.find((s) => Number(s.id) === cdSistema),
+      perfiles,
+    }));
+  }
+
+  getRolesDelPerfil(cdPerfil: number): string[] {
+    const relaciones = this.perfilesRolesLista.filter((pr: any) => Number(pr.cdPerfil) === Number(cdPerfil));
+    return relaciones.map((pr: any) => String(pr.dsNombreRol || pr.dsRol || '').trim()).filter((r: string) => !!r);
   }
 
   getTitulo(): string {

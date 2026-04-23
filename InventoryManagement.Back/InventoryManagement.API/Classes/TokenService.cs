@@ -10,16 +10,26 @@ namespace InventoryManagement.API.Classes
         private readonly IConfiguration _config;
         public TokenService(IConfiguration config) => _config = config;
 
-        public string GenerarToken(string usuario, string rol)
+        public string GenerarToken(string usuario, string perfil, bool isAdmin = false, int? cdSistema = null)
         {
             var clave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? "UnaClaveMuyLargaYSecretaDe32Chars"));
             var credenciales = new SigningCredentials(clave, SecurityAlgorithms.HmacSha256);
 
+            var roleClaimValue = isAdmin ? "ADMIN" : perfil;
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Name, usuario),
+                new(ClaimTypes.Role, roleClaimValue),
+                new("perfil", perfil),
+                new("isAdmin", isAdmin ? "true" : "false")
+            };
+
+            if (cdSistema.HasValue)
+            {
+                claims.Add(new("cdSistema", cdSistema.Value.ToString()));
+            }
+
             // Los "Claims" son la información que viaja DENTRO del token cifrado
-            var claims = new[] {
-            new Claim(ClaimTypes.Name, usuario),
-            new Claim(ClaimTypes.Role, rol) // El rol que viene de SQL
-        };
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],

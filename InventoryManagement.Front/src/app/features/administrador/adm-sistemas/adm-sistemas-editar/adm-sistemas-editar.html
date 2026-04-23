@@ -87,6 +87,79 @@
             <div class="toggle-wrap">
               <mat-slide-toggle formControlName="icBaja">Marcar como baja</mat-slide-toggle>
             </div>
+
+            @if(form.value.id){
+              <div class="seguridad-box">
+                <h3>Seguridad del Sistema</h3>
+
+                <div class="seguridad-grid">
+                  <div class="seguridad-panel">
+                    <h4>Nuevo Rol</h4>
+                    <mat-form-field class="full-width" appearance="outline">
+                      <mat-label>Clave Rol</mat-label>
+                      <input matInput [(ngModel)]="rolNuevo" [ngModelOptions]="{ standalone: true }" placeholder="Ej. PAT_EDITOR">
+                    </mat-form-field>
+                    <mat-form-field class="full-width" appearance="outline">
+                      <mat-label>Nombre</mat-label>
+                      <input matInput [(ngModel)]="rolNombreNuevo" [ngModelOptions]="{ standalone: true }" placeholder="Ej. Editor">
+                    </mat-form-field>
+                    <mat-form-field class="full-width" appearance="outline">
+                      <mat-label>Descripción</mat-label>
+                      <input matInput [(ngModel)]="rolDescripcionNueva" [ngModelOptions]="{ standalone: true }" placeholder="Permisos del rol">
+                    </mat-form-field>
+                    <button mat-stroked-button type="button" (click)="agregarRol()" [disabled]="!rolNuevo.trim()">
+                      <mat-icon>add</mat-icon>
+                      Agregar Rol
+                    </button>
+                  </div>
+
+                  <div class="seguridad-panel">
+                    <h4>Nuevo Perfil</h4>
+                    <mat-form-field class="full-width" appearance="outline">
+                      <mat-label>Perfil</mat-label>
+                      <input matInput [(ngModel)]="perfilNuevo" [ngModelOptions]="{ standalone: true }" placeholder="Ej. Supervisor">
+                    </mat-form-field>
+                    <mat-form-field class="full-width" appearance="outline">
+                      <mat-label>Descripción</mat-label>
+                      <input matInput [(ngModel)]="perfilDescripcionNueva" [ngModelOptions]="{ standalone: true }" placeholder="Uso del perfil">
+                    </mat-form-field>
+                    <button mat-stroked-button type="button" (click)="agregarPerfil()" [disabled]="!perfilNuevo.trim()">
+                      <mat-icon>add</mat-icon>
+                      Agregar Perfil
+                    </button>
+                  </div>
+                </div>
+
+                <div class="perfiles-vinculos">
+                  <h4>Perfiles y roles del sistema</h4>
+                  @if(perfilesSistema.length > 0){
+                    @for(perfil of perfilesSistema; track perfil.cdPerfil){
+                      <div class="perfil-vinculo-item">
+                        <div class="perfil-vinculo-header">
+                          <strong>{{ perfil.dsPerfil }}</strong>
+                          <span>{{ getRolesDelPerfil(perfil.cdPerfil).join(', ') || 'Sin roles' }}</span>
+                        </div>
+                        <div class="perfil-vinculo-actions">
+                          <mat-form-field appearance="outline">
+                            <mat-label>Agregar rol al perfil</mat-label>
+                            <mat-select [(ngModel)]="rolSeleccionadoParaPerfil" [ngModelOptions]="{ standalone: true }">
+                              @for(rol of rolesSistema; track rol.cdRol){
+                                <mat-option [value]="rol.cdRol">{{ rol.dsNombre || rol.dsRol }}</mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                          <button mat-flat-button type="button" (click)="vincularRolPerfil(perfil.cdPerfil)" [disabled]="!rolSeleccionadoParaPerfil">
+                            Vincular
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  } @else {
+                    <p class="no-items">No hay perfiles creados para este sistema.</p>
+                  }
+                </div>
+              </div>
+            }
           </form>
         </mat-card-content>
       </mat-card>

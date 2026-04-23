@@ -19,7 +19,6 @@ BEGIN
             @dsNombre NVARCHAR(100), 
             @dsApellido NVARCHAR(100), 
             @dsEmail NVARCHAR(100), 
-            @cdRol INT, 
             @icActivo BIT;
 
     -- 2. "Mapeamos" los valores del JSON a las variables
@@ -31,7 +30,6 @@ BEGIN
         @dsNombre = dsNombre,
         @dsApellido = dsApellido,
         @dsEmail = dsEmail,
-        @cdRol = cdRol,
         @icActivo = icActivo
     FROM OPENJSON(@jsParametro)
     WITH (
@@ -41,7 +39,6 @@ BEGIN
         dsNombre NVARCHAR(100),
         dsApellido NVARCHAR(100),
         dsEmail NVARCHAR(100),
-        cdRol INT,
         icActivo BIT
     );
 
@@ -49,8 +46,8 @@ BEGIN
     IF @cdUsuario IS NULL OR @cdUsuario = 0
     BEGIN
         -- INSERTAR NUEVO USUARIO
-        INSERT INTO Usuarios (dsLogin, dsContraseña, dsNombre, dsApellido, dsEmail, cdRol, icActivo, dtCreacion)
-        VALUES (@dsLogin, @dsPassword, @dsNombre, @dsApellido, @dsEmail, @cdRol, @icActivo, GETDATE());
+        INSERT INTO Usuarios (dsLogin, dsContraseña, dsNombre, dsApellido, dsEmail, icActivo, dtCreacion)
+        VALUES (@dsLogin, @dsPassword, @dsNombre, @dsApellido, @dsEmail, @icActivo, GETDATE());
         
         SELECT @cdUsuario=@@IDENTITY
     END
@@ -63,7 +60,6 @@ BEGIN
             dsNombre = @dsNombre,
             dsApellido = @dsApellido,
             dsEmail = @dsEmail,
-            cdRol = @cdRol,
             icActivo = @icActivo
         WHERE cdUsuario = @cdUsuario;
 

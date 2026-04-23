@@ -168,6 +168,127 @@
   margin-top: 10px;
 }
 
+.separator-line {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 24px 0;
+}
+
+.section-title {
+  margin: 24px 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #19354a;
+}
+
+.section-description {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #5a7484;
+}
+
+.perfiles-grid {
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+
+  h4 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #19354a;
+  }
+}
+
+.accesos-actuales {
+  margin: 12px 0 18px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f7fbff;
+  border: 1px solid #d8e6f3;
+
+  h4 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: #1d425c;
+  }
+}
+
+.sistema-bloque {
+  border: 1px solid #d7e3ee;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.sistema-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #1a3f59;
+}
+
+.perfil-chip {
+  border-radius: 6px;
+  background: #eef5fb;
+  border: 1px solid #d5e3f0;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.perfil-name {
+  display: block;
+  font-weight: 600;
+}
+
+.perfil-roles,
+.perfil-roles-inline {
+  display: block;
+  margin-top: 4px;
+  color: #4f6779;
+  font-size: 12px;
+}
+
+.perfil-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background: white;
+  border: 1px solid #e0e8f0;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #19354a;
+    box-shadow: 0 2px 8px rgba(25, 53, 74, 0.1);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.perfil-description {
+  margin: 0;
+  font-size: 12px;
+  color: #738a9a;
+  font-style: italic;
+}
+
+.no-items {
+  padding: 16px;
+  text-align: center;
+  color: #9ca8b4;
+  font-size: 13px;
+  background: #f5f7fa;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
 .info-item-header {
   display: flex;
   align-items: center;

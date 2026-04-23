@@ -25,7 +25,12 @@ export const adminGuard: CanActivateFn = () => {
   const router = inject(Router);
   const user = getStoredUser();
 
-  if (user && Number(user.cdRol) === 1) {
+  const esAdminPorRolNumerico = Number(user?.cdRol) === 1;
+  const dsRol = String(user?.dsRol || '').toUpperCase();
+  const esAdminPorTexto = dsRol.includes('ADMIN');
+  const esAdminPorFlag = user?.isAdmin === true;
+
+  if (user && (esAdminPorRolNumerico || esAdminPorTexto || esAdminPorFlag)) {
     return true;
   }
 

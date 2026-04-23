@@ -7,9 +7,16 @@ import { Notify } from '../../core/notify';
 
 export interface UsuarioSesion {
   cdUsuario?: number;
-  cdRol?: number;
   dsNombre?: string;
+  dsApellido?: string;
   dsLogin?: string;
+  dsPerfil?: string;
+  isAdmin?: boolean;
+  cdSistema?: number;
+  dsSistema?: string;
+  dsPrefijo?: string;
+  // legacy - mantenidos por compatibilidad con guards existentes
+  cdRol?: number;
   dsRol?: string;
 }
 
@@ -19,7 +26,13 @@ export class LoginStore {
   public readonly currentUser$ = this._currentUser.asObservable();
 
   public readonly isAdmin$ = this.currentUser$.pipe(
-    map((user) => Number(user?.cdRol) === 1)
+    map((user) => {
+      const esAdminPorRolNumerico = Number(user?.cdRol) === 1;
+      const dsRol = String(user?.dsRol || '').toUpperCase();
+      const esAdminPorTexto = dsRol.includes('ADMIN');
+      const esAdminPorFlag = (user as any)?.isAdmin === true;
+      return esAdminPorRolNumerico || esAdminPorTexto || esAdminPorFlag;
+    })
   );
 
   constructor(

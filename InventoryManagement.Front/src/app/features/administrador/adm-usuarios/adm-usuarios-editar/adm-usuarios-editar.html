@@ -77,17 +77,6 @@
               </mat-form-field>
             </div>
 
-            <mat-form-field class="full-width" appearance="outline">
-              <mat-label>Email</mat-label>
-              <input matInput formControlName="dsEmail" type="email">
-              @if(form.get('dsEmail')?.hasError('required')){
-                <mat-error>El email es obligatorio</mat-error>
-              }
-              @if(form.get('dsEmail')?.hasError('email')){
-                <mat-error>Ingresa un email valido</mat-error>
-              }
-            </mat-form-field>
-
             <div class="form-grid">
               <mat-form-field appearance="outline">
                 <mat-label>Login</mat-label>
@@ -101,17 +90,80 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Rol</mat-label>
-                <mat-select formControlName="cdRol">
-                  <mat-option *ngFor="let rol of (roles$ | async)" [value]="rol.cdRol">
-                    {{ rol.dsRol }}
-                  </mat-option>
-                </mat-select>
-                @if(form.get('cdRol')?.hasError('required')){
-                  <mat-error>Selecciona un rol</mat-error>
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="dsEmail" type="email">
+                @if(form.get('dsEmail')?.hasError('required')){
+                  <mat-error>El email es obligatorio</mat-error>
+                }
+                @if(form.get('dsEmail')?.hasError('email')){
+                  <mat-error>Ingresa un email valido</mat-error>
                 }
               </mat-form-field>
             </div>
+
+            <div class="separator-line"></div>
+            <h3 class="section-title">Asignación de Perfiles por Sistema</h3>
+            <p class="section-description">Selecciona un sistema y asigna los perfiles que necesita el usuario</p>
+
+            @if(form.value.cdUsuario){
+              <div class="accesos-actuales">
+                <h4>Sistemas asignados al usuario</h4>
+                @if(getAccesosPorSistema().length > 0){
+                  @for(acceso of getAccesosPorSistema(); track acceso.sistema?.id){
+                    <div class="sistema-bloque">
+                      <div class="sistema-header">
+                        <strong>{{ acceso.sistema?.descripcion || 'Sistema' }}</strong>
+                        <span>{{ acceso.sistema?.prefijo || '' }}</span>
+                      </div>
+                      @for(perfil of acceso.perfiles; track perfil.cdPerfil){
+                        <div class="perfil-chip">
+                          <div>
+                            <span class="perfil-name">{{ perfil.dsPerfil }}</span>
+                            <small class="perfil-roles">Roles: {{ getRolesDelPerfil(perfil.cdPerfil).join(', ') || 'Sin roles asociados' }}</small>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <p class="no-items">El usuario todavía no tiene sistemas/perfiles asignados</p>
+                }
+              </div>
+            }
+
+            <mat-form-field class="full-width" appearance="outline">
+              <mat-label>Agregar acceso en sistema</mat-label>
+              <mat-select formControlName="cdSistema" (selectionChange)="onSistemaChange($event.value)">
+                <mat-option [value]="null">-- Selecciona un sistema --</mat-option>
+                <mat-option *ngFor="let sistema of (sistemas$ | async)" [value]="sistema.id">
+                  {{ sistema.descripcion }} ({{ sistema.prefijo }})
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            @if (perfiles$ | async; as perfiles) {
+              @if(perfiles.length > 0){
+                <div class="perfiles-grid">
+                  <h4>Perfiles Disponibles</h4>
+                  @for(perfil of perfiles; track perfil.cdPerfil){
+                    <div class="perfil-item">
+                      <mat-slide-toggle 
+                        [checked]="isPerfilAsignado(perfil.cdPerfil)"
+                        (change)="togglePerfilAsignado(perfil.cdPerfil, $event.checked)"
+                        [disabled]="!form.value.cdUsuario">
+                        {{ perfil.dsPerfil }}
+                      </mat-slide-toggle>
+                      @if(perfil.dsDescripcion){
+                        <p class="perfil-description">{{ perfil.dsDescripcion }}</p>
+                      }
+                      <p class="perfil-roles-inline">Roles del perfil: {{ getRolesDelPerfil(perfil.cdPerfil).join(', ') || 'Sin roles asociados' }}</p>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="no-items">No hay perfiles disponibles para el sistema seleccionado</p>
+              }
+            }
 
             <div class="form-grid">
               <mat-form-field appearance="outline">

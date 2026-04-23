@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AdministradorStore } from '../../administrador.store';
 import { Loading } from '../../../../core/loading';
@@ -19,6 +20,7 @@ import { Notify } from '../../../../core/notify';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     RouterModule,
     MatToolbarModule,
@@ -28,6 +30,7 @@ import { Notify } from '../../../../core/notify';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatSlideToggleModule,
   ],
   templateUrl: './adm-sistemas-editar.html',
@@ -41,9 +44,21 @@ export class AdmSistemasEditar implements OnInit {
   public readonly loading = inject(Loading);
   private readonly notify = inject(Notify);
   public saveError = '';
+  public rolNuevo = '';
+  public rolNombreNuevo = '';
+  public rolDescripcionNueva = '';
+  public perfilNuevo = '';
+  public perfilDescripcionNueva = '';
+  public rolSeleccionadoParaPerfil: number | null = null;
 
   public modoEditar = true;
   private sistemaOriginal: any = null;
+  public readonly rolesAdm$ = this.store.rolesAdm$;
+  public readonly perfiles$ = this.store.perfiles$;
+  public readonly perfilesRoles$ = this.store.perfilesRoles$;
+  public rolesSistema: any[] = [];
+  public perfilesSistema: any[] = [];
+  public perfilesRolesSistema: any[] = [];
 
   form = this.fb.group({
     id: [0],
@@ -70,6 +85,18 @@ export class AdmSistemasEditar implements OnInit {
         prefijo: this.getPrefijo(sistema),
         icBaja: !!sistema?.icBaja,
       });
+
+      this.cargarSeguridadSistema(this.getId(sistema));
+    });
+
+    this.rolesAdm$.subscribe((list) => {
+      this.rolesSistema = Array.isArray(list) ? list : [];
+    });
+    this.perfiles$.subscribe((list) => {
+      this.perfilesSistema = Array.isArray(list) ? list : [];
+    });
+    this.perfilesRoles$.subscribe((list) => {
+      this.perfilesRolesSistema = Array.isArray(list) ? list : [];
     });
 
     this.store.loadSistemas();
@@ -131,6 +158,84 @@ export class AdmSistemasEditar implements OnInit {
 
   getTitulo(): string {
     return this.form.value.id ? String(this.form.value.descripcion || 'Sistema') : 'Nuevo Sistema';
+  }
+
+  agregarRol(): void {
+    const cdSistema = Number(this.form.value.id || 0);
+    if (!cdSistema || !this.rolNuevo.trim()) return;
+
+    this.store.saveRol({
+      dsRol: this.rolNuevo.trim(),
+      dsNombre: (this.rolNombreNuevo || this.rolNuevo).trim(),
+      dsDescripcion: this.rolDescripcionNueva?.trim() || undefined,
+      cdSistema,
+      icBorrado: false,
+    }).subscribe({
+      next: () => {
+        this.rolNuevo = '';
+        this.rolNombreNuevo = '';
+        this.rolDescripcionNueva = '';
+        this.cargarSeguridadSistema(cdSistema);
+        this.notify.success('Rol agregado correctamente.');
+      },
+      error: (err) => {
+        console.error('Error agregando rol:', err);
+        this.notify.error('No se pudo agregar el rol.');
+      }
+    });
+  }
+
+  agregarPerfil(): void {
+    const cdSistema = Number(this.form.value.id || 0);
+    if (!cdSistema || !this.perfilNuevo.trim()) return;
+
+    this.store.savePerfil({
+      dsPerfil: this.perfilNuevo.trim(),
+      dsDescripcion: this.perfilDescripcionNueva?.trim() || undefined,
+      cdSistema,
+      icBorrado: false,
+    }).subscribe({
+      next: () => {
+        this.perfilNuevo = '';
+        this.perfilDescripcionNueva = '';
+        this.cargarSeguridadSistema(cdSistema);
+        this.notify.success('Perfil agregado correctamente.');
+      },
+      error: (err) => {
+        console.error('Error agregando perfil:', err);
+        this.notify.error('No se pudo agregar el perfil.');
+      }
+    });
+  }
+
+  vincularRolPerfil(cdPerfil: number): void {
+    const cdRol = Number(this.rolSeleccionadoParaPerfil || 0);
+    const cdSistema = Number(this.form.value.id || 0);
+    if (!cdPerfil || !cdRol || !cdSistema) return;
+
+    this.store.savePerfilRol(cdPerfil, cdRol).subscribe({
+      next: () => {
+        this.cargarSeguridadSistema(cdSistema);
+        this.notify.success('Rol vinculado al perfil.');
+      },
+      error: (err) => {
+        console.error('Error vinculando rol a perfil:', err);
+        this.notify.error('No se pudo vincular el rol al perfil.');
+      }
+    });
+  }
+
+  getRolesDelPerfil(cdPerfil: number): string[] {
+    return this.perfilesRolesSistema
+      .filter((x: any) => Number(x.cdPerfil) === Number(cdPerfil))
+      .map((x: any) => String(x.dsNombreRol || x.dsRol || '').trim())
+      .filter((x: string) => !!x);
+  }
+
+  private cargarSeguridadSistema(cdSistema: number): void {
+    this.store.loadRolesAdm(cdSistema);
+    this.store.loadPerfiles(cdSistema);
+    this.store.loadPerfilesRoles(cdSistema);
   }
 
   private getId(item: any): number {
