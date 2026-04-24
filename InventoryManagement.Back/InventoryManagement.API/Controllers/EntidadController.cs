@@ -77,9 +77,9 @@ namespace InventoryManagement.API.Controllers
         private string GetSistemaPrefix()
         {
             // Intentamos leer el prefijo desde un Header (como hacés en el laburo)
-            // Si no viene, usamos "SIS" por defecto
+            // Si no viene, usamos "ADM" por defecto
             var headerSistema = Request.Headers["Sistema"].ToString();
-            return !string.IsNullOrEmpty(headerSistema) ? headerSistema : "SIS";
+            return !string.IsNullOrEmpty(headerSistema) ? headerSistema : "ADM";
         }
 
         private string ProcesarPassword(string json)

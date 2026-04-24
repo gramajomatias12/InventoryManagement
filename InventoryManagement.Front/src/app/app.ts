@@ -24,7 +24,7 @@ export class App {
   private router = inject(Router);
 
   get sistemaPrefijo(): string {
-    return (localStorage.getItem('sistema_prefijo') || 'SIS').toUpperCase();
+    return (localStorage.getItem('sistema_prefijo') || 'ADM').toUpperCase();
   }
 
   get sistemaNombre(): string {

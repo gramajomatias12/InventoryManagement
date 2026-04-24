@@ -17,7 +17,7 @@ export class Data {
   constructor(private http: HttpClient) { }
 
   private getSistemaActual(): string {
-    return localStorage.getItem('sistema_prefijo') || 'SIS';
+    return localStorage.getItem('sistema_prefijo') || 'ADM';
   }
 
   getEntidad(entidad: string, sistema?: string): Observable<any> {

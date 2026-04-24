@@ -5,7 +5,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('token');
-  const sistema = localStorage.getItem('sistema_prefijo') || 'SIS';
+  const sistema = localStorage.getItem('sistema_prefijo') || 'ADM';
   const headers: Record<string, string> = {};
 
   // Si tenemos token, agregamos header Bearer

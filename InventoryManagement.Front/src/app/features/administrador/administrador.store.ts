@@ -12,7 +12,7 @@ export interface SistemaItem {
 
 @Injectable({ providedIn: 'root' })
 export class AdministradorStore {
-  private readonly SISTEMA = 'SIS';
+  private readonly SISTEMA = 'ADM';
   private readonly SISTEMA_ADM = 'ADM';
 
   private readonly _sistemas = new BehaviorSubject<SistemaItem[]>([]);

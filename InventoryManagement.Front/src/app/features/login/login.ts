@@ -52,7 +52,7 @@ export class Login implements OnInit {
   ngOnInit() {
     const token = localStorage.getItem('token');
     if (token) {
-      const prefijo = localStorage.getItem('sistema_prefijo') || 'SIS';
+      const prefijo = localStorage.getItem('sistema_prefijo') || 'ADM';
       const rutaDestino = this.getRutaSistema(prefijo);
       if (!rutaDestino) {
         this.store.logout();
@@ -119,7 +119,7 @@ export class Login implements OnInit {
   }
 
   cargarSistemas() {
-    this.data.getEntidad('Sistemas', 'SIS').subscribe({
+    this.data.getEntidad('Sistemas', 'ADM').subscribe({
       next: (res) => {
         this.sistemas = res;
 
