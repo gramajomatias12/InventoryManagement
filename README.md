@@ -1,73 +1,163 @@
 # InventoryManagement
 
-Aplicación web modular para gestión de inventario y administración de sistemas. El proyecto está dividido en un frontend en Angular y un backend en .NET, con una estructura pensada para trabajar con distintos módulos según el sistema seleccionado al iniciar sesión.
+Aplicación web modular para administración de sistemas e inventario. El proyecto está dividido en un frontend Angular y un backend ASP.NET Core, con autenticación por sistema y auditoría de sesiones en base de datos.
 
-## Estructura general
+## Stack actual
 
-### Frontend
-La carpeta InventoryManagement.Front contiene la interfaz de usuario. Actualmente el frontend está organizado por módulos funcionales, como Administrador y Patrimonio.
+- Frontend: Angular 20
+- Backend: ASP.NET Core 8
+- Base de datos: SQL Server
+- Autenticación: JWT + stored procedures por sistema
+
+## Estructura del repositorio
+
+### InventoryManagement.Front
+Contiene la aplicación Angular.
+
+- `src/app/core`: interceptores, guards, servicios base y estado global
+- `src/app/features/login`: login, selección de sistema y scripts SQL de autenticación
+- `src/app/features/administrador`: ABM y administración general
+- `src/app/features/patrimonio`: módulo funcional de patrimonio
+- `src/app/shared`: componentes reutilizables
+
+### InventoryManagement.Back
+Contiene la API .NET.
+
+- `InventoryManagement.API/Controllers`: endpoints HTTP
+- `InventoryManagement.API/Classes`: acceso a datos y servicios auxiliares
+- `InventoryManagement.API/Models`: modelos de request/response
+
+## Configuración actual
 
 ### Backend
-La carpeta InventoryManagement.Back contiene la API y la lógica de acceso a datos.
 
-## Organización del frontend
+- Framework: `net8.0`
+- URL local principal: `http://localhost:5035`
+- Swagger: `http://localhost:5035/swagger`
+- Connection string por defecto: `Server=Tecnologias-05;Database=DBPrueba;Trusted_Connection=True;TrustServerCertificate=True;`
 
-### Core
-La carpeta core contiene servicios transversales que usa toda la aplicación:
+Si el servidor SQL o la base cambian, actualizar `InventoryManagement.Back/InventoryManagement.API/appsettings.json`.
 
-- auth.interceptor: agrega el token y el encabezado del sistema en cada petición HTTP.
-- error.interceptor: captura errores globales y muestra mensajes al usuario.
-- loading.interceptor: activa y desactiva el indicador de carga durante las peticiones.
-- loading: mantiene el estado global de carga para mostrar un spinner o barra de progreso.
-- data: centraliza las llamadas HTTP genéricas al backend.
-- auth.guard: protege rutas que requieren sesión o permisos de administrador.
+### Frontend
 
-### Features
-La carpeta features contiene los módulos funcionales del sistema. Hoy el proyecto incluye:
+Scripts principales:
 
-- login: autenticación y selección de sistema.
-- administrador: pantallas de administración general.
-- patrimonio: pantallas del módulo de patrimonio.
+- `npm start`: levanta Angular en desarrollo
+- `npm run build`: compila la aplicación
+- `npm test`: ejecuta tests
 
-Cada sistema puede tener su propia pantalla de inicio, su menú lateral y sus ABM o vistas específicas.
+## Cómo levantar el proyecto
 
-Además, dentro de cada sistema o módulo puede existir una carpeta llamada scripts, donde se guardan los stored procedures necesarios para el ABM o para la lógica asociada a esa funcionalidad.
+### 1. Backend
 
-### Shared
-La carpeta shared contiene componentes reutilizables, por ejemplo diálogos de confirmación u otros elementos comunes.
+Desde `InventoryManagement.Back/InventoryManagement.API`:
 
-## Flujo actual del frontend
+```powershell
+dotnet restore
+dotnet run
+```
 
-1. El usuario inicia sesión desde la pantalla de login.
-2. Selecciona el sistema con el que quiere trabajar.
-3. La aplicación guarda el token, el prefijo del sistema y otros datos de sesión.
-4. Según el prefijo elegido, el usuario es redirigido al módulo correspondiente.
-5. El shell principal detecta automáticamente si la ruta actual pertenece a un sistema protegido y, si la ruta declara un menú, lo renderiza de forma dinámica.
-6. El login también resuelve el destino a partir de la metadata de rutas, sin hardcodear prefijos en el componente.
-7. Los interceptores de core se encargan automáticamente de autenticación, loading y manejo de errores.
+### 2. Frontend
 
-## Cómo agregar un nuevo sistema al frontend
+Desde `InventoryManagement.Front`:
 
-Paso a paso breve:
+```powershell
+npm install
+npm start
+```
 
-1. Crear una nueva carpeta dentro de features con el nombre del sistema.
-2. Crear el componente principal del módulo y sus rutas hijas.
-3. Agregar, como mínimo, una vista de inicio y, si hace falta, un menú propio.
-4. Registrar la nueva ruta principal en app.routes.ts.
-5. En esa misma ruta, definir el prefijo en data.prefijo y, si corresponde, el menú lateral en data.menuComponent.
-6. Si el módulo necesita consumir datos, crear su store y reutilizar los servicios de core, especialmente data y loading.
+## Flujo de autenticación actual
 
-## Convención sugerida para nuevos sistemas
+1. El frontend envía credenciales a `POST /api/Auth/login`.
+2. El backend toma el encabezado `Sistema` y ejecuta el procedimiento `{PREFIJO}_Login`.
+3. Si el login es correcto, el backend genera JWT y registra la sesión en tablas AUTH.
+4. El frontend guarda token, datos del usuario, sistema actual y el identificador de sesión.
+5. Al hacer logout, el frontend llama `POST /api/Auth/logout`.
+6. El backend actualiza la sesión activa en `AUTH_Sesiones` y deja trazabilidad en `AUTH_LogAcceso`.
 
-Para mantener el proyecto ordenado, conviene seguir esta idea:
+## Auditoría de sesiones
 
-- nombre de carpeta del módulo según el sistema
-- componente principal del sistema
-- componente de inicio
-- componente de menú
-- componentes ABM según la necesidad del módulo
+La autenticación actual usa estas tablas/procedimientos:
 
-## Nota importante
+- `AUTH_UserAgent`
+- `AUTH_Sesiones`
+- `AUTH_LogAcceso`
+- `AUTH_RegistrarSesion_IU`
+- `AUTH_CerrarSesion_IU`
 
-Por ahora, este paso a paso cubre solamente la parte frontend. Más adelante habrá que completar el alta del sistema en backend, base de datos y lógica de autenticación para que quede totalmente operativo.
+Comportamiento actual:
+
+- Login: inserta una nueva fila en `AUTH_Sesiones` con `icActiva = 1`
+- Logout: actualiza esa fila con `icActiva = 0`, `dtCierre` y `dsMotivoCierre = 'logout'`
+
+## Convenciones del backend
+
+El backend trabaja con procedimientos almacenados y convención por prefijo:
+
+- Login por sistema: `{PREFIJO}_Login`
+- Consultas genéricas: `{PREFIJO}_{Entidad}_S`
+- Altas/modificaciones: `{PREFIJO}_{Entidad}_IU`
+
+Prefijo por defecto actual: `ADM`
+
+## Módulos actuales
+
+### Login
+
+- Selección de sistema
+- Generación y persistencia de token
+- Persistencia de sesión autenticada
+- Logout con cierre de sesión en base
+
+### Administrador
+
+- Gestión de sistemas
+- Gestión de usuarios
+- Gestión de perfiles y roles
+- Asignación de perfiles por sistema a usuarios
+
+### Patrimonio
+
+- Base del módulo funcional con sus propios stored procedures por prefijo `PAT`
+
+## Scripts SQL
+
+Los scripts SQL están versionados dentro del frontend, cerca de cada funcionalidad:
+
+- `InventoryManagement.Front/src/app/features/login/scripts`
+- `InventoryManagement.Front/src/app/features/administrador/scripts`
+- `InventoryManagement.Front/src/app/features/patrimonio/scripts`
+
+Scripts relevantes de autenticación:
+
+- `ADM_Login.sql`
+- `PAT_Login.sql`
+- `AUTH_UserAgent.sql`
+- `AUTH_Sesiones.sql`
+- `AUTH_LogAcceso.sql`
+- `AUTH_LogAcceso_IU.sql`
+- `AUTH_RegistrarSesion_IU.sql`
+- `AUTH_CerrarSesion_IU.sql`
+
+## Cómo agregar un nuevo sistema
+
+1. Crear el módulo en `src/app/features/<sistema>`.
+2. Registrar su ruta en el router del frontend.
+3. Definir el prefijo del sistema en metadata de ruta.
+4. Crear el procedimiento `{PREFIJO}_Login`.
+5. Crear los procedimientos `{PREFIJO}_{Entidad}_S` y `{PREFIJO}_{Entidad}_IU` necesarios.
+6. Dar de alta el sistema, perfiles y roles en base de datos.
+
+## Estado funcional actual
+
+- Login por sistema funcionando con prefijos `ADM` y `PAT`
+- Registro de sesiones AUTH funcionando
+- Logout con cierre de sesión AUTH implementado
+- Administración multi-sistema de perfiles y roles en progreso funcional
+
+## Pendientes conocidos
+
+- Procedimiento `ADM_Usuarios_D`
+- Validación completa del flujo UI de perfiles/roles
+- Verificación funcional final del login de `PAT`
 
