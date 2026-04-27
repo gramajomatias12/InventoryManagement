@@ -13,13 +13,18 @@ BEGIN
         dsPerfil       NVARCHAR(80)      NOT NULL,
         cdSistema      INT               NOT NULL,
         dsDescripcion  NVARCHAR(250)     NULL,
-        dsRoles        NVARCHAR(MAX)     NULL, -- Fase 1: compatibilidad temporal
         icBorrado      BIT               NOT NULL CONSTRAINT DF_ADM_Perfiles_icBorrado DEFAULT (0),
 
         CONSTRAINT PK_ADM_Perfiles PRIMARY KEY (cdPerfil),
         CONSTRAINT FK_ADM_Perfiles_SIS_Sistemas FOREIGN KEY (cdSistema)
             REFERENCES dbo.SIS_Sistemas (cdSistema)
     );
+END
+GO
+
+IF COL_LENGTH('dbo.ADM_Perfiles', 'dsRoles') IS NOT NULL
+BEGIN
+    ALTER TABLE dbo.ADM_Perfiles DROP COLUMN dsRoles;
 END
 GO
 

@@ -90,6 +90,13 @@ Comportamiento actual:
 - Login: inserta una nueva fila en `AUTH_Sesiones` con `icActiva = 1`
 - Logout: actualiza esa fila con `icActiva = 0`, `dtCierre` y `dsMotivoCierre = 'logout'`
 
+Validación de sesión en operaciones de entidad:
+
+- El frontend propaga `X-Session-Id` en las llamadas de datos.
+- El backend captura `X-Session-Id`, IP (`X-Forwarded-For` o IP remota) y `User-Agent` en `EntidadController`.
+- `AccesoDatos` detecta en tiempo de ejecución si el SP soporta `@uiSesion`, `@ip` y `@userAgent`, y los envía solo cuando existen.
+- Los SPs administrativos actuales validan sesión y permisos mediante `AUTH_Sesiones_S`.
+
 ## Convenciones del backend
 
 El backend trabaja con procedimientos almacenados y convención por prefijo:
@@ -97,6 +104,7 @@ El backend trabaja con procedimientos almacenados y convención por prefijo:
 - Login por sistema: `{PREFIJO}_Login`
 - Consultas genéricas: `{PREFIJO}_{Entidad}_S`
 - Altas/modificaciones: `{PREFIJO}_{Entidad}_IU`
+- Parámetros opcionales de seguridad por SP: `@uiSesion`, `@ip`, `@userAgent`
 
 Prefijo por defecto actual: `ADM`
 
@@ -134,10 +142,17 @@ Scripts relevantes de autenticación:
 - `PAT_Login.sql`
 - `AUTH_UserAgent.sql`
 - `AUTH_Sesiones.sql`
+- `AUTH_Sesiones_S.sql`
 - `AUTH_LogAcceso.sql`
 - `AUTH_LogAcceso_IU.sql`
 - `AUTH_RegistrarSesion_IU.sql`
 - `AUTH_CerrarSesion_IU.sql`
+
+Cambios recientes en scripts de administrador:
+
+- Se agregó validación de sesión/rol en SPs `ADM_*` de sistemas, usuarios, perfiles, roles y asignaciones.
+- Se eliminó la columna `dsRoles` de `ADM_Perfiles`; la relación perfil-rol queda normalizada en `ADM_PerfilesRoles`.
+- Se retiraron scripts legacy `SIS_*` de administrador para unificar convención en `ADM_*`.
 
 ## Cómo agregar un nuevo sistema
 
@@ -153,11 +168,8 @@ Scripts relevantes de autenticación:
 - Login por sistema funcionando con prefijos `ADM` y `PAT`
 - Registro de sesiones AUTH funcionando
 - Logout con cierre de sesión AUTH implementado
+- Propagación de `ui_sesion` (`X-Session-Id`) desde frontend a backend activa
+- Validación de sesión/IP/User-Agent y control de rol en SPs administrativos activa
 - Administración multi-sistema de perfiles y roles en progreso funcional
 
-## Pendientes conocidos
-
-- Procedimiento `ADM_Usuarios_D`
-- Validación completa del flujo UI de perfiles/roles
-- Verificación funcional final del login de `PAT`
 

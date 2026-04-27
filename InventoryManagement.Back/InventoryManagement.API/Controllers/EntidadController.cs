@@ -22,11 +22,18 @@ namespace InventoryManagement.API.Controllers
         public object Get(string entidad)
         {
             AccesoDatos db = new(_configuration);
+            var sessionContext = GetSessionContext();
             
             // Construye: SIS_Usuarios_S o PAT_Categorias_S según el Header "Sistema"
             string spNombre = GetSistemaPrefix() + "_" + entidad + "_S";
 
-            Respuesta respuesta = db.Consultar(spNombre, "{}");
+            Respuesta respuesta = db.Consultar(
+                spNombre,
+                "{}",
+                sessionContext.UiSesion,
+                sessionContext.Ip,
+                sessionContext.UserAgent
+            );
 
             if (respuesta.isException) return BadRequest(respuesta.mensaje);
 
@@ -38,9 +45,16 @@ namespace InventoryManagement.API.Controllers
         public object Get(string entidad, string param)
         {
             AccesoDatos db = new(_configuration);
+            var sessionContext = GetSessionContext();
             string spNombre = GetSistemaPrefix() + "_" + entidad + "_S";
 
-            Respuesta respuesta = db.Consultar(spNombre, param);
+            Respuesta respuesta = db.Consultar(
+                spNombre,
+                param,
+                sessionContext.UiSesion,
+                sessionContext.Ip,
+                sessionContext.UserAgent
+            );
 
             if (respuesta.isException) return BadRequest(respuesta.mensaje);
 
@@ -51,6 +65,8 @@ namespace InventoryManagement.API.Controllers
         [HttpPost("{entidad}")]
         public object Post(string entidad, [FromBody] PeticionGenerica data)
         {
+            var sessionContext = GetSessionContext();
+
             // --- CAPA DE SEGURIDAD PARA USUARIOS ---
             if (entidad.Equals("Usuarios", StringComparison.OrdinalIgnoreCase))
             {
@@ -62,7 +78,13 @@ namespace InventoryManagement.API.Controllers
             // Construye: SIS_Usuarios_IU o PAT_Categorias_IU
             string spNombre = GetSistemaPrefix() + "_" + entidad + "_IU";
 
-            Respuesta respuesta = db.Consultar(spNombre, data.jsonParametros);
+            Respuesta respuesta = db.Consultar(
+                spNombre,
+                data.jsonParametros,
+                sessionContext.UiSesion,
+                sessionContext.Ip,
+                sessionContext.UserAgent
+            );
 
             if (respuesta.isException)
             {
@@ -96,6 +118,36 @@ namespace InventoryManagement.API.Controllers
                 return nodoJson.ToJsonString();
             }
             return json;
+        }
+
+        private SessionContext GetSessionContext()
+        {
+            var forwardedFor = Request.Headers["X-Forwarded-For"].ToString();
+            var ip = !string.IsNullOrWhiteSpace(forwardedFor)
+                ? forwardedFor.Split(',')[0].Trim()
+                : HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
+
+            var userAgent = Request.Headers["User-Agent"].ToString();
+
+            var uiSesion = Request.Headers["X-Session-Id"].ToString();
+            if (string.IsNullOrWhiteSpace(uiSesion))
+            {
+                uiSesion = Request.Headers["uiSesion"].ToString();
+            }
+
+            return new SessionContext
+            {
+                UiSesion = uiSesion,
+                Ip = ip,
+                UserAgent = userAgent,
+            };
+        }
+
+        private sealed class SessionContext
+        {
+            public string UiSesion { get; init; } = string.Empty;
+            public string Ip { get; init; } = string.Empty;
+            public string UserAgent { get; init; } = string.Empty;
         }
     }
 }

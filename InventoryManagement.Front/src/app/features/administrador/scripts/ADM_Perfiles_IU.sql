@@ -6,17 +6,50 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE OR ALTER PROCEDURE [dbo].[ADM_Perfiles_IU]
-    @jsParametro NVARCHAR(MAX)
+    @jsParametro NVARCHAR(MAX),
+    @ip VARCHAR(20) = NULL,
+    @userAgent VARCHAR(MAX) = NULL,
+    @uiSesion VARCHAR(100) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    DECLARE @rol VARCHAR(200) = 'ADM_ADM';
+    DECLARE @resultado VARCHAR(MAX);
+    DECLARE @procId VARCHAR(100);
+    DECLARE @cdSesion INT;
+    DECLARE @dsLogin VARCHAR(100);
+    DECLARE @cdUsuario INT;
+    DECLARE @dsPerfilSesion VARCHAR(100);
+
+    SET @procId = OBJECT_NAME(@@PROCID);
+
+    EXECUTE AUTH_Sesiones_S @uiSesion, @userAgent, @ip, @procId, @jsParametro, @resultado OUTPUT, @rol;
+
+    SELECT
+        @cdSesion = cdSesion,
+        @dsLogin = dsLogin,
+        @dsPerfilSesion = dsPerfil,
+        @cdUsuario = cdUsuario
+    FROM OPENJSON(@resultado)
+    WITH (
+        cdSesion INT '$.cdSesion',
+        dsLogin VARCHAR(100) '$.dsLogin',
+        dsPerfil VARCHAR(100) '$.dsPerfil',
+        cdUsuario INT '$.cdUsuario'
+    );
+
+    IF @cdSesion IS NULL
+    BEGIN
+        RAISERROR(@resultado, 16, 2);
+        RETURN;
+    END;
 
     DECLARE @cdPerfil INT,
             @id INT,
             @dsPerfil NVARCHAR(80),
             @cdSistema INT,
             @dsDescripcion NVARCHAR(250),
-            @dsRoles NVARCHAR(MAX),
             @icBorrado BIT;
 
     SELECT
@@ -25,7 +58,6 @@ BEGIN
         @dsPerfil = dsPerfil,
         @cdSistema = cdSistema,
         @dsDescripcion = dsDescripcion,
-        @dsRoles = dsRoles,
         @icBorrado = icBorrado
     FROM OPENJSON(@jsParametro)
     WITH (
@@ -34,7 +66,6 @@ BEGIN
         dsPerfil NVARCHAR(80),
         cdSistema INT,
         dsDescripcion NVARCHAR(250),
-        dsRoles NVARCHAR(MAX),
         icBorrado BIT
     );
 
@@ -43,8 +74,8 @@ BEGIN
 
     IF @cdPerfil IS NULL OR @cdPerfil = 0
     BEGIN
-        INSERT INTO dbo.ADM_Perfiles (dsPerfil, cdSistema, dsDescripcion, dsRoles, icBorrado)
-        VALUES (@dsPerfil, @cdSistema, @dsDescripcion, @dsRoles, @icBorrado);
+        INSERT INTO dbo.ADM_Perfiles (dsPerfil, cdSistema, dsDescripcion, icBorrado)
+        VALUES (@dsPerfil, @cdSistema, @dsDescripcion, @icBorrado);
 
         SELECT @cdPerfil = SCOPE_IDENTITY();
     END
@@ -54,7 +85,6 @@ BEGIN
         SET dsPerfil = @dsPerfil,
             cdSistema = @cdSistema,
             dsDescripcion = @dsDescripcion,
-            dsRoles = @dsRoles,
             icBorrado = @icBorrado
         WHERE cdPerfil = @cdPerfil;
     END

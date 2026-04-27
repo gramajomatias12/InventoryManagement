@@ -6,10 +6,44 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE OR ALTER PROCEDURE [dbo].[ADM_Sistemas_IU]
-    @jsParametro NVARCHAR(MAX)
+    @jsParametro NVARCHAR(MAX),
+    @ip VARCHAR(20) = NULL,
+    @userAgent VARCHAR(MAX) = NULL,
+    @uiSesion VARCHAR(100) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    DECLARE @rol VARCHAR(200) = 'ADM_ADM';
+    DECLARE @resultado VARCHAR(MAX);
+    DECLARE @procId VARCHAR(100);
+    DECLARE @cdSesion INT;
+    DECLARE @dsLogin VARCHAR(100);
+    DECLARE @cdUsuario INT;
+    DECLARE @dsPerfil VARCHAR(100);
+
+    SET @procId = OBJECT_NAME(@@PROCID);
+
+    EXECUTE AUTH_Sesiones_S @uiSesion, @userAgent, @ip, @procId, @jsParametro, @resultado OUTPUT, @rol;
+
+    SELECT
+        @cdSesion = cdSesion,
+        @dsLogin = dsLogin,
+        @dsPerfil = dsPerfil,
+        @cdUsuario = cdUsuario
+    FROM OPENJSON(@resultado)
+    WITH (
+        cdSesion INT '$.cdSesion',
+        dsLogin VARCHAR(100) '$.dsLogin',
+        dsPerfil VARCHAR(100) '$.dsPerfil',
+        cdUsuario INT '$.cdUsuario'
+    );
+
+    IF @cdSesion IS NULL
+    BEGIN
+        RAISERROR(@resultado, 16, 2);
+        RETURN;
+    END;
 
     DECLARE @cdSistema INT,
             @idSistema INT,

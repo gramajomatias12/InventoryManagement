@@ -6,6 +6,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('token');
   const sistema = localStorage.getItem('sistema_prefijo') || 'ADM';
+  const uiSesion = localStorage.getItem('ui_sesion') || '';
   const headers: Record<string, string> = {};
 
   // Si tenemos token, agregamos header Bearer
@@ -16,6 +17,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Si la request no trae sistema, usamos el sistema actual guardado
   if (!req.headers.has('Sistema')) {
     headers['Sistema'] = sistema;
+  }
+
+  // Propagamos la sesion para que el backend pueda validar contexto en SPs.
+  if (uiSesion && !req.headers.has('X-Session-Id')) {
+    headers['X-Session-Id'] = uiSesion;
   }
 
   if (Object.keys(headers).length === 0) {

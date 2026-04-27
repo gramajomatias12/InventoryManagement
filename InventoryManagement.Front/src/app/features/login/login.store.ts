@@ -60,6 +60,11 @@ export class LoginStore {
           localStorage.setItem('token', res.token);
         }
 
+        const uiSesion = (res as any)?.uiSesion || (res as any)?.ui_sesion || res?.usuario?.sesion || '';
+        if (uiSesion) {
+          localStorage.setItem('ui_sesion', String(uiSesion));
+        }
+
         if (res?.usuario) {
           console.log('[LOGIN] payload usuario:', res.usuario);
           console.log('[LOGIN] payload completo:', res);
@@ -78,6 +83,7 @@ export class LoginStore {
     const clearLocal = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('user_data');
+      localStorage.removeItem('ui_sesion');
       localStorage.removeItem('sistema_prefijo');
       localStorage.removeItem('sistema_cd');
       localStorage.removeItem('sistema_descripcion');
