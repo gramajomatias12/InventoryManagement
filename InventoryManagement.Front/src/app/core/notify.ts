@@ -7,19 +7,19 @@ export class Notify {
 
   success(message: string, action = 'Cerrar'): void {
     this.snackBar.open(message, action, {
-      duration: 3500,
+      duration: 3000,
       panelClass: ['success-snackbar'],
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
+     // horizontalPosition: 'right',
+     // verticalPosition: 'top',
     });
   }
 
   error(message: string, action = 'Cerrar'): void {
     this.snackBar.open(message, action, {
-      duration: 5000,
+      duration: 3000,
       panelClass: ['error-snackbar'],
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
+     // horizontalPosition: 'right',
+    //verticalPosition: 'top',
     });
   }
 }

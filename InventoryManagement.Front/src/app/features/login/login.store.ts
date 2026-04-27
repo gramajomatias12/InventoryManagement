@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, finalize, map, tap, catchError, of } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
 import { Loading } from '../../core/loading';
 import { Notify } from '../../core/notify';
 
@@ -21,6 +22,10 @@ export interface UsuarioSesion {
   dsRol?: string;
 }
 
+// Este servicio maneja el estado de autenticación del usuario en la aplicación,
+// incluyendo el almacenamiento de la sesión y la información del usuario, 
+// así como las operaciones de login y logout.
+
 @Injectable({ providedIn: 'root' })
 export class LoginStore {
   private readonly _currentUser = new BehaviorSubject<UsuarioSesion | null>(this.getStoredUser());
@@ -39,6 +44,7 @@ export class LoginStore {
   constructor(
     private http: HttpClient,
     private router: Router,
+    private dialog: MatDialog,
     private loading: Loading,
     private notify: Notify,
   ) {}
@@ -78,17 +84,21 @@ export class LoginStore {
 
   logout() {
     const user = this._currentUser.getValue();
-    const sesionGuid = user?.sesion;
+    const sesionGuid = user?.sesion || localStorage.getItem('ui_sesion') || '';
 
     const clearLocal = () => {
+      this.dialog.closeAll();
+
       localStorage.removeItem('token');
       localStorage.removeItem('user_data');
       localStorage.removeItem('ui_sesion');
       localStorage.removeItem('sistema_prefijo');
-      localStorage.removeItem('sistema_cd');
       localStorage.removeItem('sistema_descripcion');
       this._currentUser.next(null);
       this.loading.hide();
+
+      
+
       this.router.navigate(['/login']).then((navigated) => {
         if (navigated) {
           this.notify.success('Sesion cerrada correctamente.');

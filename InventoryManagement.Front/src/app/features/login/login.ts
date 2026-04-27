@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +11,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { Data } from '../../core/data';
 import { getRutaSistema } from '../../core/system-routes';
 import { Notify } from '../../core/notify';
+import { Loading } from '../../core/loading';
 import { LoginStore } from './login.store';
 
 interface Sistema {
@@ -34,14 +35,16 @@ export class Login implements OnInit {
   private store = inject(LoginStore);
   private router = inject(Router);
   private notify = inject(Notify);
+  private loading = inject(Loading);
+  private document = inject(DOCUMENT);
   hide = signal(true);
   loginError = signal<string | null>(null);
   submitting = signal(false);
   public sistemas: Sistema[] = [];
   
   loginForm = this.fb.group({
-    dsLogin: ['', [Validators.required]],
-    dsContraseña: ['', [Validators.required, Validators.minLength(4)]],
+    dsLogin: [null, [Validators.required]],
+    dsContraseña: [null, [Validators.required, Validators.minLength(4)]],
     idSistema: [null as number | null, [Validators.required]]
   });
 
@@ -81,7 +84,7 @@ export class Login implements OnInit {
 
     const rutaDestino = this.getRutaSistema(sistemaSeleccionado.prefijo);
     if (!rutaDestino) {
-      this.loginError.set('El sistema seleccionado no tiene un modulo frontend disponible.');
+      this.loginError.set('El sistema seleccionado no tiene un modulo disponible.');
       console.error('Sistema sin módulo frontend disponible:', sistemaSeleccionado.prefijo);
       return;
     }
@@ -91,6 +94,7 @@ export class Login implements OnInit {
     this.store.login(this.loginForm.value, sistemaSeleccionado.prefijo).subscribe({
       next: () => {
         localStorage.setItem('sistema_cd', String(sistemaSeleccionado.id));
+        localStorage.setItem('ultimo_sistema_cd', String(sistemaSeleccionado.id));
         localStorage.setItem('sistema_prefijo', sistemaSeleccionado.prefijo);
         localStorage.setItem('sistema_descripcion', sistemaSeleccionado.descripcion);
         this.submitting.set(false);
@@ -123,7 +127,9 @@ export class Login implements OnInit {
       next: (res) => {
         this.sistemas = res;
 
-        const ultimoSistema = Number(localStorage.getItem('sistema_cd'));
+        const ultimoSistema = Number(
+          localStorage.getItem('ultimo_sistema_cd') || localStorage.getItem('sistema_cd')
+        );
         if (ultimoSistema) {
           const existe = this.sistemas.some(s => s.id === ultimoSistema && !s.icBaja);
           if (existe) {
@@ -146,5 +152,5 @@ export class Login implements OnInit {
   private getRutaSistema(prefijo: string): string | null {
     return getRutaSistema(this.router.config, prefijo);
   }
-  
+
 }
