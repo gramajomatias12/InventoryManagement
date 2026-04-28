@@ -51,6 +51,7 @@ Modulos actuales:
 - No usar la maqueta basica de `mat-toolbar` + `content-container` si el modulo ya tiene un lenguaje visual mas rico.
 - Para `patrimonio`, tomar como referencia directa `pat-categorias` y `pat-categorias-editar`.
 - La lista debe usar hero superior, panel de estadisticas, buscador integrado, tarjetas con `surface-panel` y estados `loading`, `empty` y `no-results`.
+- El panel de estadisticas de la lista debe mostrar solo la cantidad total de registros de la entidad; no generar una card separada de `Visible` o `Visibles`.
 - El editar debe usar hero superior con acciones, overlay de loading con `mat-spinner`, cabecera de formulario o perfil y cards informativas en modo lectura.
 - Reutilizar la misma paleta, radios, sombras, espaciados y nombres de clases cuando el modulo ya tenga un sistema visual definido.
 - En templates, para loading usar `loading.loading$ | async`, no `loading()`.
