@@ -1,0 +1,115 @@
+<section class="crud-page patrimonio-theme">
+    <header class="section-hero">
+        <div class="hero-copy">
+            <span class="hero-kicker">Patrimonio</span>
+            <h1>Proveedores</h1>
+            <p>Administra los contactos comerciales del modulo para sostener compras y reposicion con trazabilidad.</p>
+        </div>
+
+        <a mat-flat-button class="hero-action" [routerLink]="['/patrimonio/proveedores', 0]">
+            <mat-icon>add</mat-icon>
+            Nuevo Proveedor
+        </a>
+    </header>
+
+    <div class="container">
+        @if(loading.loading$ | async){
+        <div class="feedback-card loading-container">
+            <div>
+                <h2>Cargando proveedores</h2>
+                <p>Estamos preparando la agenda de contactos para este modulo.</p>
+            </div>
+        </div>
+        }
+        @else if(proveedores.length === 0){
+        <div class="feedback-card empty-state">
+            <mat-icon class="empty-icon">local_shipping</mat-icon>
+            <h2>No hay proveedores registrados</h2>
+            <p>Agrega el primer proveedor para centralizar direcciones, telefonos y canales de contacto.</p>
+            <button mat-flat-button class="hero-action" [routerLink]="['/patrimonio/proveedores', 0]">
+                <mat-icon>add</mat-icon>
+                Crear Primer Proveedor
+            </button>
+        </div>
+        }
+        @else {
+        <div class="surface-panel header-section">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <mat-icon>business</mat-icon>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ proveedores.length }}</span>
+                        <span class="stat-label">Proveedores</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <mat-icon>visibility</mat-icon>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ filteredItems().length }}</span>
+                        <span class="stat-label">Visible{{ filteredItems().length !== 1 ? 's' : '' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-panel">
+                <span class="panel-tag">Busqueda inteligente</span>
+                <mat-form-field class="search-field" appearance="outline">
+                    <mat-label>Buscar proveedor</mat-label>
+                    <input matInput type="search" placeholder="Nombre o email..." [(ngModel)]="filtro">
+                    <mat-icon matPrefix>search</mat-icon>
+                    @if(filtro){
+                    <button mat-icon-button matSuffix (click)="filtro = ''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    }
+                </mat-form-field>
+            </div>
+        </div>
+
+        @if(filteredItems().length === 0){
+        <div class="feedback-card no-results">
+            <mat-icon>search_off</mat-icon>
+            <h3>No se encontraron resultados</h3>
+            <p>No hay proveedores que coincidan con "{{ filtro }}"</p>
+            <button mat-stroked-button (click)="filtro = ''">Limpiar busqueda</button>
+        </div>
+        }
+        @else {
+        <div class="proveedores-grid">
+            @for(item of filteredItems(); track getId(item)) {
+            <mat-card class="proveedor-card" [routerLink]="['/patrimonio/proveedores', getId(item)]">
+                <mat-card-content>
+                    <div class="card-header">
+                        <div class="avatar">
+                            <mat-icon>local_shipping</mat-icon>
+                        </div>
+                        <span class="card-chip">ID {{ getId(item) }}</span>
+                    </div>
+
+                    <div class="card-body">
+                        <h3 class="proveedor-nombre">{{ getNombre(item) }}</h3>
+                        @if(item?.dsEmail){
+                        <p class="proveedor-meta">{{ item.dsEmail }}</p>
+                        }
+                        @if(item?.dsDireccion){
+                        <p class="proveedor-meta">{{ item.dsDireccion }}</p>
+                        }
+                        @if(item?.dsTelefono){
+                        <p class="proveedor-meta">{{ item.dsTelefono }}</p>
+                        }
+                    </div>
+                </mat-card-content>
+
+                <mat-card-actions>
+                    <button mat-button class="link-action">
+                        <mat-icon>visibility</mat-icon>
+                        Ver detalles
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
+        }
+        }
+    </div>
+</section>

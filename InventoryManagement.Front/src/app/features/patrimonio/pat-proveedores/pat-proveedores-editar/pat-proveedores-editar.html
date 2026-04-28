@@ -1,0 +1,166 @@
+<section class="detail-page patrimonio-theme">
+    <header class="detail-hero">
+        <div class="hero-main">
+            <a mat-stroked-button class="back-link" routerLink="/patrimonio/proveedores">
+                <mat-icon>arrow_back</mat-icon>
+                Volver
+            </a>
+            <span class="hero-kicker">Patrimonio</span>
+            <h1>{{ getTitulo() }}</h1>
+            <p>Visualiza o edita los datos del proveedor con una estructura clara para contacto y seguimiento.</p>
+        </div>
+
+        <div class="hero-actions">
+            @if(!modoEditar){
+            <button mat-flat-button class="primary-action" (click)="editar()">
+                <mat-icon>edit</mat-icon>
+                Editar
+            </button>
+            }
+            @else {
+            <button mat-stroked-button [hidden]="!form.value.id" (click)="cancelar()" class="secondary-action btn-cancel">
+                <mat-icon>close</mat-icon>
+                Cancelar
+            </button>
+            <button mat-flat-button class="primary-action" (click)="guardar()" [disabled]="form.invalid">
+                <mat-icon>save</mat-icon>
+                Guardar
+            </button>
+            }
+        </div>
+    </header>
+
+    <div class="container">
+        @if(loading.loading$ | async){
+        <div class="loading-overlay">
+            <mat-spinner></mat-spinner>
+        </div>
+        }
+
+        @if(modoEditar){
+        <div class="edit-container">
+            <div class="surface-panel form-header">
+                <div class="avatar-large">
+                    <mat-icon>local_shipping</mat-icon>
+                </div>
+                <div class="header-info">
+                    <h2>{{ form.value.id ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h2>
+                    <p>Completa la informacion principal y los canales de contacto.</p>
+                </div>
+            </div>
+
+            <mat-card class="form-card surface-panel">
+                <mat-card-content>
+                    @if(saveError){
+                    <div class="form-feedback error" role="alert">
+                        <mat-icon>error_outline</mat-icon>
+                        <span>{{ saveError }}</span>
+                    </div>
+                    }
+
+                    <form [formGroup]="form" (ngSubmit)="guardar()">
+                        <div class="form-section">
+                            <div class="section-title">
+                                <mat-icon>business</mat-icon>
+                                <h3>Informacion Basica</h3>
+                            </div>
+
+                            <mat-form-field class="full-width" appearance="outline">
+                                <mat-label>Nombre del Proveedor</mat-label>
+                                <input matInput formControlName="dsProveedor" placeholder="Ingrese el nombre del proveedor" />
+                                <mat-icon matPrefix>badge</mat-icon>
+                                @if(form.get('dsProveedor')?.hasError('required')){
+                                <mat-error>El nombre es requerido</mat-error>
+                                }
+                                @if(form.get('dsProveedor')?.hasError('minlength')){
+                                <mat-error>Minimo 3 caracteres</mat-error>
+                                }
+                            </mat-form-field>
+
+                            <mat-form-field class="full-width" appearance="outline">
+                                <mat-label>Direccion</mat-label>
+                                <input matInput formControlName="dsDireccion" placeholder="Ingrese la direccion" />
+                                <mat-icon matPrefix>location_on</mat-icon>
+                            </mat-form-field>
+
+                            <mat-form-field class="full-width" appearance="outline">
+                                <mat-label>Telefono</mat-label>
+                                <input matInput formControlName="dsTelefono" placeholder="Ingrese el telefono" />
+                                <mat-icon matPrefix>phone</mat-icon>
+                            </mat-form-field>
+
+                            <mat-form-field class="full-width" appearance="outline">
+                                <mat-label>Email</mat-label>
+                                <input matInput type="email" formControlName="dsEmail" placeholder="Ingrese el email" />
+                                <mat-icon matPrefix>mail</mat-icon>
+                                @if(form.get('dsEmail')?.hasError('email')){
+                                <mat-error>Email invalido</mat-error>
+                                }
+                            </mat-form-field>
+
+                            <div class="toggle-wrap">
+                                <mat-slide-toggle formControlName="icActivo">Proveedor activo</mat-slide-toggle>
+                            </div>
+                        </div>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+        </div>
+        }
+        @else {
+        <div class="view-container">
+            <div class="surface-panel profile-header">
+                <div class="avatar-large">
+                    <mat-icon>local_shipping</mat-icon>
+                </div>
+                <div class="profile-info">
+                    <h1>{{ form.value.dsProveedor || 'Proveedor' }}</h1>
+                    <p class="profile-type">Proveedor de Patrimonio</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <mat-card class="info-card surface-panel">
+                    <mat-card-content>
+                        <div class="info-item-header">
+                            <mat-icon>mail</mat-icon>
+                            <h3>Email</h3>
+                        </div>
+                        <p class="info-value">{{ form.value.dsEmail || 'Sin email registrado' }}</p>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="info-card surface-panel">
+                    <mat-card-content>
+                        <div class="info-item-header">
+                            <mat-icon>location_on</mat-icon>
+                            <h3>Direccion</h3>
+                        </div>
+                        <p class="info-value">{{ form.value.dsDireccion || 'Sin direccion registrada' }}</p>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="info-card surface-panel">
+                    <mat-card-content>
+                        <div class="info-item-header">
+                            <mat-icon>phone</mat-icon>
+                            <h3>Telefono</h3>
+                        </div>
+                        <p class="info-value">{{ form.value.dsTelefono || 'Sin telefono registrado' }}</p>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="info-card surface-panel">
+                    <mat-card-content>
+                        <div class="info-item-header">
+                            <mat-icon>toggle_on</mat-icon>
+                            <h3>Estado</h3>
+                        </div>
+                        <p class="info-value">{{ form.value.icActivo ? 'Activo' : 'Inactivo' }}</p>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+        }
+    </div>
+</section>

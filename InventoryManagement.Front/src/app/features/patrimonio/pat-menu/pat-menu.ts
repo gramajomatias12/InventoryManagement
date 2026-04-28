@@ -30,6 +30,13 @@ export class PatMenu {
       description: 'Organiza las familias y clasificaciones del inventario.',
       requiredRoles: ['PAT_ADM', 'PAT_USU'],
     },
+    {
+      label: 'Proveedores',
+      route: '/patrimonio/proveedores',
+      icon: 'local_shipping',
+      description: 'Administra proveedores y sus datos de contacto.',
+      requiredRoles: ['PAT_ADM', 'PAT_USU'],
+    },
   ];
 
   get visibleItems(): PermissionMenuItem[] {

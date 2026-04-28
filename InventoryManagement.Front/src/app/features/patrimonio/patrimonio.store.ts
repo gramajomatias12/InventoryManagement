@@ -55,6 +55,16 @@ export class PatrimonioStore {
                 error: (err) => console.error('Error cargando proveedores:', err)
             });
     }
+
+    saveProveedores(proveedor: any) {
+        this.loading.show();
+        return this.data.postEntidad('Proveedores', proveedor, this.SISTEMA).pipe(
+            finalize(() => {
+                this.loading.hide();
+                this.loadProveedores(); // Recargamos la lista automáticamente
+            })
+        );
+    }
 }
 
 
