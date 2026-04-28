@@ -10,18 +10,18 @@ namespace InventoryManagement.API.Classes
         private readonly IConfiguration _config;
         public TokenService(IConfiguration config) => _config = config;
 
-        public string GenerarToken(string usuario, string perfil, bool isAdmin = false, int? cdSistema = null)
+        public string GenerarToken(string usuario, string perfil, int? cdSistema = null)
         {
             var clave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? "UnaClaveMuyLargaYSecretaDe32Chars"));
             var credenciales = new SigningCredentials(clave, SecurityAlgorithms.HmacSha256);
 
-            var roleClaimValue = isAdmin ? "ADMIN" : perfil;
+            var roleClaimValue = perfil;
+
             var claims = new List<Claim>
             {
                 new(ClaimTypes.Name, usuario),
                 new(ClaimTypes.Role, roleClaimValue),
-                new("perfil", perfil),
-                new("isAdmin", isAdmin ? "true" : "false")
+                new("perfil", perfil)
             };
 
             if (cdSistema.HasValue)

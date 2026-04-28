@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,7 +11,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { Data } from '../../core/data';
 import { getRutaSistema } from '../../core/system-routes';
 import { Notify } from '../../core/notify';
-import { Loading } from '../../core/loading';
+//import { Loading } from '../../core/loading';
 import { LoginStore } from './login.store';
 
 interface Sistema {
@@ -35,8 +35,8 @@ export class Login implements OnInit {
   private store = inject(LoginStore);
   private router = inject(Router);
   private notify = inject(Notify);
-  private loading = inject(Loading);
-  private document = inject(DOCUMENT);
+  // private loading = inject(Loading);
+  // private document = inject(DOCUMENT);
   hide = signal(true);
   loginError = signal<string | null>(null);
   submitting = signal(false);

@@ -6,6 +6,8 @@ function getStoredUser() {
   return rawUser ? JSON.parse(rawUser) : null;
 }
 
+// este guard se encarga de proteger las rutas que requieren autenticación, 
+// sin importar el rol del usuario.
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
   const token = localStorage.getItem('token');

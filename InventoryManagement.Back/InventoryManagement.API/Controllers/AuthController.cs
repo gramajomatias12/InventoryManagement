@@ -98,12 +98,11 @@ namespace InventoryManagement.API.Controllers
             
             string login = GetString(usuario, "dsLogin", "login") ?? string.Empty;
             string perfil = ResolvePerfil(usuario);
-            bool isAdmin = ResolveIsAdmin(usuario);
             int? cdSistema = GetInt(usuario, "cdSistema", "idSistema") ?? GetInputSystem(data);
 
             usuario["dsLogin"] = login;
             usuario["dsPerfil"] = perfil;
-            usuario["isAdmin"] = isAdmin;
+
             if (cdSistema.HasValue)
             {
                 usuario["cdSistema"] = cdSistema.Value;
@@ -126,7 +125,7 @@ namespace InventoryManagement.API.Controllers
                 usuario["sesion"] = sesionGenerada;
             }
 
-            string token = _tokenService.GenerarToken(login, perfil, isAdmin, cdSistema);
+            string token = _tokenService.GenerarToken(login, perfil, cdSistema);
 
             return Ok(new
             {

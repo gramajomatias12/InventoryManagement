@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, finalize, map, tap, catchError, of } from 'rxjs';
+import { BehaviorSubject, finalize, tap, catchError, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Loading } from '../../core/loading';
 import { Notify } from '../../core/notify';
@@ -17,9 +17,6 @@ export interface UsuarioSesion {
   dsSistema?: string;
   dsPrefijo?: string;
   sesion?: string;
-  // legacy - mantenidos por compatibilidad con guards existentes
-  cdRol?: number;
-  dsRol?: string;
 }
 
 // Este servicio maneja el estado de autenticación del usuario en la aplicación,
@@ -31,23 +28,13 @@ export class LoginStore {
   private readonly _currentUser = new BehaviorSubject<UsuarioSesion | null>(this.getStoredUser());
   public readonly currentUser$ = this._currentUser.asObservable();
 
-  public readonly isAdmin$ = this.currentUser$.pipe(
-    map((user) => {
-      const esAdminPorRolNumerico = Number(user?.cdRol) === 1;
-      const dsRol = String(user?.dsRol || '').toUpperCase();
-      const esAdminPorTexto = dsRol.includes('ADMIN');
-      const esAdminPorFlag = (user as any)?.isAdmin === true;
-      return esAdminPorRolNumerico || esAdminPorTexto || esAdminPorFlag;
-    })
-  );
-
-  constructor(
+constructor(
     private http: HttpClient,
     private router: Router,
     private dialog: MatDialog,
     private loading: Loading,
     private notify: Notify,
-  ) {}
+  ) { }
 
   private getStoredUser(): UsuarioSesion | null {
     const savedUser = localStorage.getItem('user_data');
@@ -72,7 +59,6 @@ export class LoginStore {
         }
 
         if (res?.usuario) {
-          console.log('[LOGIN] payload usuario:', res.usuario);
           console.log('[LOGIN] payload completo:', res);
           localStorage.setItem('user_data', JSON.stringify(res.usuario));
           this._currentUser.next(res.usuario);
@@ -96,8 +82,6 @@ export class LoginStore {
       localStorage.removeItem('sistema_descripcion');
       this._currentUser.next(null);
       this.loading.hide();
-
-      
 
       this.router.navigate(['/login']).then((navigated) => {
         if (navigated) {
