@@ -1,5 +1,6 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
+import { PermissionService } from './permission.service';
 
 function getStoredUser() {
   const rawUser = localStorage.getItem('user_data');
@@ -37,6 +38,40 @@ export const adminGuard: CanActivateFn = () => {
   }
 
   console.error('Acceso denegado - Se requiere rol de Admin');
+  router.navigate(['/login']);
+  return false;
+};
+
+// Guard por permisos especificos de ruta.
+// La ruta puede definir en data.requiredRole (string) o data.requiredRoles (string[]).
+export const permissionGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
+  const permissionService = inject(PermissionService);
+
+  const token = localStorage.getItem('token');
+  const user = getStoredUser();
+
+  if (!token || !user) {
+    router.navigate(['/login']);
+    return false;
+  }
+
+  const requiredRole = route.data?.['requiredRole'] as string | undefined;
+  const requiredRoles = route.data?.['requiredRoles'] as string[] | undefined;
+  const roles = requiredRoles && requiredRoles.length > 0
+    ? requiredRoles
+    : (requiredRole ? [requiredRole] : []);
+
+  if (roles.length === 0) {
+    return true;
+  }
+
+  const hasAccess = permissionService.hasAnyRole(roles, user);
+  if (hasAccess) {
+    return true;
+  }
+
+  console.error('Acceso denegado - Permisos insuficientes para ruta', state.url, roles);
   router.navigate(['/login']);
   return false;
 };

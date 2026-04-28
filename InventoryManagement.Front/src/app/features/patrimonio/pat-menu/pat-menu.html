@@ -6,19 +6,11 @@
 	</div>
 
 	<nav class="menu-nav" aria-label="Menu de Patrimonio">
-		<a class="menu-link" routerLink="/patrimonio/inicio" routerLinkActive="active-link">
-			<span class="menu-icon"><mat-icon>space_dashboard</mat-icon></span>
+		<a class="menu-link" *ngFor="let item of visibleItems" [routerLink]="item.route" routerLinkActive="active-link">
+			<span class="menu-icon"><mat-icon>{{ item.icon }}</mat-icon></span>
 			<span class="menu-copy">
-				<span class="menu-title">Panel</span>
-				<span class="menu-text">Resumen del modulo y accesos rapidos.</span>
-			</span>
-		</a>
-
-		<a class="menu-link" routerLink="/patrimonio/categorias" routerLinkActive="active-link">
-			<span class="menu-icon"><mat-icon>category</mat-icon></span>
-			<span class="menu-copy">
-				<span class="menu-title">Categorias</span>
-				<span class="menu-text">Organiza las familias y clasificaciones del inventario.</span>
+				<span class="menu-title">{{ item.label }}</span>
+				<span class="menu-text">{{ item.description }}</span>
 			</span>
 		</a>
 	</nav>

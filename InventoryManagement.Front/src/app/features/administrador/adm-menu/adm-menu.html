@@ -6,27 +6,11 @@
   </div>
 
   <nav class="menu-nav" aria-label="Menu de Administracion">
-    <a class="menu-link" routerLink="/administrador/inicio" routerLinkActive="active-link">
-      <span class="menu-icon"><mat-icon>space_dashboard</mat-icon></span>
+    <a class="menu-link" *ngFor="let item of visibleItems" [routerLink]="item.route" routerLinkActive="active-link">
+      <span class="menu-icon"><mat-icon>{{ item.icon }}</mat-icon></span>
       <span class="menu-copy">
-        <span class="menu-title">Panel</span>
-        <span class="menu-text">Vista general del modulo y accesos directos.</span>
-      </span>
-    </a>
-
-    <a class="menu-link" routerLink="/administrador/usuarios" routerLinkActive="active-link">
-      <span class="menu-icon"><mat-icon>group</mat-icon></span>
-      <span class="menu-copy">
-        <span class="menu-title">Usuarios</span>
-        <span class="menu-text">Altas, permisos y mantenimiento de cuentas.</span>
-      </span>
-    </a>
-
-    <a class="menu-link" routerLink="/administrador/sistemas" routerLinkActive="active-link">
-      <span class="menu-icon"><mat-icon>apps</mat-icon></span>
-      <span class="menu-copy">
-        <span class="menu-title">Sistemas</span>
-        <span class="menu-text">Administracion de modulos, prefijos y disponibilidad.</span>
+        <span class="menu-title">{{ item.label }}</span>
+        <span class="menu-text">{{ item.description }}</span>
       </span>
     </a>
   </nav>
