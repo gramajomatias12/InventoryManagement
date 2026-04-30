@@ -20,23 +20,13 @@ export class Data {
     return localStorage.getItem('sistema_prefijo') || 'ADM';
   }
 
-  private getSesionActual(): string {
-    return localStorage.getItem('ui_sesion') || '';
-  }
-
   getEntidad(entidad: string, sistema?: string): Observable<any> {
-    const headers = {
-      'Sistema': sistema || this.getSistemaActual(),
-      'X-Session-Id': this.getSesionActual(),
-    };
+    const headers = { 'Sistema': sistema || this.getSistemaActual() };
     return this.http.get(`${this.urlApi}/${entidad}`, { headers });
   }
 
   postEntidad(entidad: string, objeto: any, sistema?: string): Observable<any> {
-    const headers = {
-      'Sistema': sistema || this.getSistemaActual(),
-      'X-Session-Id': this.getSesionActual(),
-    };
+    const headers = { 'Sistema': sistema || this.getSistemaActual() };
     const body = { jsonParametros: JSON.stringify(objeto) };
     return this.http.post(`${this.urlApi}/${entidad}`, body, { headers });
   }

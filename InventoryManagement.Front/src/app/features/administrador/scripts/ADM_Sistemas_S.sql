@@ -70,7 +70,50 @@ BEGIN
             s.cdSistema AS id,
             s.dsSistema AS descripcion,
             s.dsPrefijo AS prefijo,
-            s.icBaja AS icBaja
+            s.icBaja AS icBaja,
+            JSON_QUERY(ISNULL((
+                SELECT
+                    p.cdPerfil,
+                    p.dsPerfil,
+                    p.cdSistema,
+                    p.dsDescripcion,
+                    p.icBorrado,
+                    JSON_QUERY(ISNULL((
+                        SELECT
+                            r.cdRol,
+                            r.dsRol,
+                            r.cdSistema,
+                            r.dsNombre,
+                            r.dsDescripcion,
+                            r.icBorrado
+                        FROM dbo.ADM_PerfilesRoles pr
+                        INNER JOIN dbo.ADM_Roles r ON r.cdRol = pr.cdRol
+                        WHERE pr.cdPerfil = p.cdPerfil
+                          AND r.cdSistema = p.cdSistema
+                          AND UPPER(r.dsRol) LIKE UPPER(s.dsPrefijo) + '_%'
+                        ORDER BY r.dsNombre
+                        FOR JSON PATH
+                    ), '[]')) AS roles
+                FROM dbo.ADM_Perfiles p
+                WHERE p.cdSistema = s.cdSistema
+                  AND UPPER(p.dsPerfil) LIKE UPPER(s.dsPrefijo) + '_%'
+                ORDER BY p.dsPerfil
+                FOR JSON PATH
+            ), '[]')) AS perfiles,
+            JSON_QUERY(ISNULL((
+                SELECT
+                    r.cdRol,
+                    r.dsRol,
+                    r.cdSistema,
+                    r.dsNombre,
+                    r.dsDescripcion,
+                    r.icBorrado
+                FROM dbo.ADM_Roles r
+                WHERE r.cdSistema = s.cdSistema
+                  AND UPPER(r.dsRol) LIKE UPPER(s.dsPrefijo) + '_%'
+                ORDER BY r.dsNombre
+                FOR JSON PATH
+            ), '[]')) AS roles
         FROM dbo.SIS_Sistemas s
         WHERE (@cdSistema IS NULL OR s.cdSistema = @cdSistema)
           AND (@soloActivos IS NULL OR @soloActivos = 0 OR s.icBaja = 0)

@@ -45,8 +45,10 @@ BEGIN
         RETURN;
     END;
 
-    DECLARE @cdPerfil INT,
-            @cdRol INT;
+        DECLARE @cdPerfil INT,
+            @cdRol INT,
+            @cdSistemaPerfil INT,
+            @cdSistemaRol INT;
 
     SELECT
         @cdPerfil = cdPerfil,
@@ -56,6 +58,38 @@ BEGIN
         cdPerfil INT,
         cdRol INT
     );
+
+    IF @cdPerfil IS NULL OR @cdRol IS NULL
+    BEGIN
+        RAISERROR('cdPerfil y cdRol son obligatorios.', 16, 2);
+        RETURN;
+    END;
+
+    SELECT @cdSistemaPerfil = p.cdSistema
+    FROM dbo.ADM_Perfiles p
+    WHERE p.cdPerfil = @cdPerfil;
+
+    IF @cdSistemaPerfil IS NULL
+    BEGIN
+        RAISERROR('El perfil indicado no existe.', 16, 2);
+        RETURN;
+    END;
+
+    SELECT @cdSistemaRol = r.cdSistema
+    FROM dbo.ADM_Roles r
+    WHERE r.cdRol = @cdRol;
+
+    IF @cdSistemaRol IS NULL
+    BEGIN
+        RAISERROR('El rol indicado no existe.', 16, 2);
+        RETURN;
+    END;
+
+    IF @cdSistemaPerfil <> @cdSistemaRol
+    BEGIN
+        RAISERROR('No se puede vincular un perfil y un rol de sistemas distintos.', 16, 2);
+        RETURN;
+    END;
 
     IF NOT EXISTS (
         SELECT 1

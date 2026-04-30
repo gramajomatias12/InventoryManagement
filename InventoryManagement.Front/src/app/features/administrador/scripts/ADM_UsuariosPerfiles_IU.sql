@@ -45,9 +45,10 @@ BEGIN
         RETURN;
     END;
 
-    DECLARE @cdUsuario INT,
+        DECLARE @cdUsuario INT,
             @cdPerfil INT,
-            @dsDatos NVARCHAR(MAX);
+            @dsDatos NVARCHAR(MAX),
+            @cdSistema INT;
 
     SELECT
         @cdUsuario = cdUsuario,
@@ -59,6 +60,29 @@ BEGIN
         cdPerfil INT,
         dsDatos NVARCHAR(MAX)
     );
+
+    SELECT @cdSistema = p.cdSistema
+    FROM dbo.ADM_Perfiles p
+    WHERE p.cdPerfil = @cdPerfil;
+
+    IF @cdSistema IS NULL
+    BEGIN
+        RAISERROR('El perfil indicado no existe.', 16, 2);
+        RETURN;
+    END;
+
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.ADM_UsuariosPerfiles up
+        INNER JOIN dbo.ADM_Perfiles p ON p.cdPerfil = up.cdPerfil
+        WHERE up.cdUsuario = @cdUsuario
+          AND p.cdSistema = @cdSistema
+          AND up.cdPerfil <> @cdPerfil
+    )
+    BEGIN
+        RAISERROR('El usuario ya tiene un perfil asignado para este sistema.', 16, 2);
+        RETURN;
+    END;
 
     IF EXISTS (
         SELECT 1

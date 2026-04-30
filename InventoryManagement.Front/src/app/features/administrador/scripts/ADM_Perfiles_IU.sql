@@ -45,12 +45,13 @@ BEGIN
         RETURN;
     END;
 
-    DECLARE @cdPerfil INT,
+        DECLARE @cdPerfil INT,
             @id INT,
             @dsPerfil NVARCHAR(80),
             @cdSistema INT,
             @dsDescripcion NVARCHAR(250),
-            @icBorrado BIT;
+            @icBorrado BIT,
+            @dsPrefijoSistema NVARCHAR(10);
 
     SELECT
         @cdPerfil = cdPerfil,
@@ -71,6 +72,17 @@ BEGIN
 
     SET @cdPerfil = COALESCE(@cdPerfil, @id);
     SET @icBorrado = ISNULL(@icBorrado, 0);
+
+    SELECT @dsPrefijoSistema = UPPER(LTRIM(RTRIM(dsPrefijo)))
+    FROM dbo.SIS_Sistemas
+    WHERE cdSistema = @cdSistema;
+
+    IF NULLIF(@dsPrefijoSistema, '') IS NOT NULL
+       AND NULLIF(LTRIM(RTRIM(@dsPerfil)), '') IS NOT NULL
+       AND UPPER(@dsPerfil) NOT LIKE @dsPrefijoSistema + '_%'
+    BEGIN
+        SET @dsPerfil = @dsPrefijoSistema + '_' + UPPER(LTRIM(RTRIM(@dsPerfil)));
+    END
 
     IF @cdPerfil IS NULL OR @cdPerfil = 0
     BEGIN

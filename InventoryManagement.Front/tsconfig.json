@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "ignoreDeprecations": "5.0",
     "target": "ES2022",
     "module": "preserve"
   },
