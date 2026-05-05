@@ -14,7 +14,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @rol VARCHAR(200) = 'ADM_ADM';
+    DECLARE @rol VARCHAR(200) = 'ADM_PUBLIC';
     DECLARE @resultado VARCHAR(MAX);
     DECLARE @procId VARCHAR(100);
     DECLARE @cdSesion INT;
@@ -68,7 +68,7 @@ BEGIN
             u.dsEmail,
             u.icActivo,
             u.dtCreacion
-        FROM dbo.Usuarios u
+        FROM dbo.ADM_Usuarios u
         WHERE (@cdUsuario IS NULL OR u.cdUsuario = @cdUsuario)
         ORDER BY u.dtCreacion DESC
         FOR JSON PATH

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,6 +29,7 @@ const passwordsMatchValidator: ValidatorFn = (control: AbstractControl): Validat
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     RouterModule,
     MatToolbarModule,
@@ -60,7 +61,9 @@ export class AdmUsuariosEditar implements OnInit {
   public readonly usuariosPerfiles$ = this.store.usuariosPerfiles$;
   public readonly perfilesRoles$ = this.store.perfilesRoles$;
 
-  public sistemaSeleccionado: any = null;
+  public sistemaSeleccionado: number | null = null;
+  public perfilSeleccionadoNuevo: number | null = null;
+  public perfilSeleccionadoPorSistema: Record<number, number | null> = {};
   public perfilesAsignados: Set<number> = new Set();
   public sistemasLista: any[] = [];
   public usuariosPerfilesLista: any[] = [];
@@ -114,6 +117,18 @@ export class AdmUsuariosEditar implements OnInit {
     this.usuariosPerfiles$.subscribe((list) => {
       this.usuariosPerfilesLista = Array.isArray(list) ? list : [];
       this.perfilesAsignados = new Set(list.map((up: any) => up.cdPerfil));
+
+      const perfilesPorId = new Map<number, any>(this.perfilesLista.map((p: any) => [Number(p.cdPerfil), p]));
+      const porSistema: Record<number, number | null> = {};
+      for (const up of this.usuariosPerfilesLista) {
+        const perfil = perfilesPorId.get(Number(up.cdPerfil));
+        if (!perfil) continue;
+
+        const cdSistema = Number(perfil.cdSistema);
+        if (!cdSistema || porSistema[cdSistema]) continue;
+        porSistema[cdSistema] = Number(perfil.cdPerfil);
+      }
+      this.perfilSeleccionadoPorSistema = porSistema;
     });
 
     this.perfiles$.subscribe((list) => {
@@ -205,23 +220,71 @@ export class AdmUsuariosEditar implements OnInit {
   }
 
   onSistemaChange(cdSistema: number): void {
-    this.sistemaSeleccionado = cdSistema;
-    if (cdSistema) {
-      this.store.loadPerfiles(cdSistema);
-    }
+    this.sistemaSeleccionado = cdSistema ? Number(cdSistema) : null;
+    this.perfilSeleccionadoNuevo = null;
   }
 
-  togglePerfilAsignado(cdPerfil: number, asignar: boolean): void {
-    const cdUsuario = this.form.value.cdUsuario;
-    if (!cdUsuario) return;
+  agregarSistemaConPerfil(): void {
+    const cdUsuario = Number(this.form.value.cdUsuario || 0);
+    const cdSistema = Number(this.form.value.cdSistema || 0);
+    const cdPerfil = Number(this.perfilSeleccionadoNuevo || 0);
 
-    if (asignar) {
-      this.store.saveUsuarioPerfil(cdUsuario, cdPerfil).subscribe({
+    if (!cdUsuario) {
+      this.notify.error('Primero guarda el usuario para poder asignar sistemas.');
+      return;
+    }
+    if (!cdSistema || !cdPerfil) {
+      this.notify.error('Selecciona sistema y perfil para agregar el acceso.');
+      return;
+    }
+
+    const cdPerfilActual = this.getPerfilAsignadoEnSistema(cdSistema);
+    if (cdPerfilActual) {
+      this.notify.error('Este sistema ya tiene un perfil asignado. Modifícalo desde la lista.');
+      return;
+    }
+
+    this.store.saveUsuarioPerfil(cdUsuario, cdPerfil).subscribe({
+      next: () => {
+        this.perfilSeleccionadoNuevo = null;
+        this.recargarAccesosUsuario(cdUsuario);
+        this.notify.success('Sistema agregado con su perfil correctamente.');
+      },
+      error: (err) => {
+        console.error('Error agregando sistema/perfil:', err);
+        this.notify.error('No se pudo agregar el sistema al usuario.');
+      }
+    });
+  }
+
+  quitarSistema(cdSistema: number): void {
+    const cdUsuario = Number(this.form.value.cdUsuario || 0);
+    const cdPerfil = this.getPerfilAsignadoEnSistema(cdSistema);
+    if (!cdUsuario || !cdPerfil) return;
+
+    this.store.deleteUsuarioPerfil(cdUsuario, cdPerfil).subscribe({
+      next: () => {
+        this.recargarAccesosUsuario(cdUsuario);
+        this.notify.success('Sistema desasignado correctamente.');
+      },
+      error: (err) => {
+        console.error('Error desasignando sistema:', err);
+        this.notify.error('No se pudo desasignar el sistema.');
+      }
+    });
+  }
+
+  cambiarPerfilSistema(cdSistema: number, cdPerfilNuevo: number | null): void {
+    const cdUsuario = Number(this.form.value.cdUsuario || 0);
+    const cdPerfilActual = this.getPerfilAsignadoEnSistema(cdSistema);
+    const cdPerfilDestino = Number(cdPerfilNuevo || 0);
+
+    if (!cdUsuario || !cdSistema || !cdPerfilDestino) return;
+
+    if (!cdPerfilActual) {
+      this.store.saveUsuarioPerfil(cdUsuario, cdPerfilDestino).subscribe({
         next: () => {
-          this.perfilesAsignados.add(cdPerfil);
-          if (cdUsuario) {
-            this.store.loadUsuariosPerfiles(Number(cdUsuario));
-          }
+          this.recargarAccesosUsuario(cdUsuario);
           this.notify.success('Perfil asignado correctamente.');
         },
         error: (err) => {
@@ -229,44 +292,58 @@ export class AdmUsuariosEditar implements OnInit {
           this.notify.error('No se pudo asignar el perfil.');
         }
       });
-    } else {
-      this.store.deleteUsuarioPerfil(cdUsuario, cdPerfil).subscribe({
-        next: () => {
-          this.perfilesAsignados.delete(cdPerfil);
-          if (cdUsuario) {
-            this.store.loadUsuariosPerfiles(Number(cdUsuario));
-          }
-          this.notify.success('Perfil desasignado correctamente.');
-        },
-        error: (err) => {
-          console.error('Error desasignando perfil:', err);
-          this.notify.error('No se pudo desasignar el perfil.');
-        }
-      });
+      return;
     }
+
+    if (Number(cdPerfilActual) === cdPerfilDestino) return;
+
+    this.store.deleteUsuarioPerfil(cdUsuario, cdPerfilActual).subscribe({
+      next: () => {
+        this.store.saveUsuarioPerfil(cdUsuario, cdPerfilDestino).subscribe({
+          next: () => {
+            this.recargarAccesosUsuario(cdUsuario);
+            this.notify.success('Perfil del sistema actualizado correctamente.');
+          },
+          error: (err) => {
+            console.error('Error asignando nuevo perfil:', err);
+            this.notify.error('Se quitó el perfil anterior, pero no se pudo asignar el nuevo.');
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error quitando perfil actual:', err);
+        this.notify.error('No se pudo cambiar el perfil del sistema.');
+      }
+    });
   }
 
-  isPerfilAsignado(cdPerfil: number): boolean {
-    return this.perfilesAsignados.has(cdPerfil);
+  getPerfilesDelSistema(cdSistema: number): any[] {
+    const id = Number(cdSistema || 0);
+    if (!id) return [];
+    return this.perfilesLista.filter((p: any) => Number(p?.cdSistema) === id);
   }
 
-  getAccesosPorSistema(): Array<{ sistema: any; perfiles: any[] }> {
-    const mapa = new Map<number, any[]>();
+  getAccesosPorSistema(): Array<{ cdSistema: number; sistema: any; perfil: any }> {
+    const accesos: Array<{ cdSistema: number; sistema: any; perfil: any }> = [];
     const perfilesPorId = new Map<number, any>(this.perfilesLista.map((p: any) => [Number(p.cdPerfil), p]));
 
     for (const up of this.usuariosPerfilesLista) {
       const perfil = perfilesPorId.get(Number(up.cdPerfil));
       if (!perfil) continue;
+
       const cdSistema = Number(perfil.cdSistema);
-      const perfiles = mapa.get(cdSistema) || [];
-      perfiles.push(perfil);
-      mapa.set(cdSistema, perfiles);
+      if (!cdSistema) continue;
+
+      if (accesos.some((a) => a.cdSistema === cdSistema)) continue;
+
+      accesos.push({
+        cdSistema,
+        sistema: this.sistemasLista.find((s) => Number(s.id) === cdSistema),
+        perfil,
+      });
     }
 
-    return Array.from(mapa.entries()).map(([cdSistema, perfiles]) => ({
-      sistema: this.sistemasLista.find((s) => Number(s.id) === cdSistema),
-      perfiles,
-    }));
+    return accesos;
   }
 
   getRolesDelPerfil(cdPerfil: number): string[] {
@@ -281,6 +358,24 @@ export class AdmUsuariosEditar implements OnInit {
 
   private getId(item: any): number {
     return Number(item?.cdUsuario || item?.id || 0);
+  }
+
+  private getPerfilAsignadoEnSistema(cdSistema: number): number | null {
+    const perfilesPorId = new Map<number, any>(this.perfilesLista.map((p: any) => [Number(p.cdPerfil), p]));
+    for (const up of this.usuariosPerfilesLista) {
+      const perfil = perfilesPorId.get(Number(up.cdPerfil));
+      if (!perfil) continue;
+
+      if (Number(perfil.cdSistema) === Number(cdSistema)) {
+        return Number(perfil.cdPerfil);
+      }
+    }
+    return null;
+  }
+
+  private recargarAccesosUsuario(cdUsuario: number): void {
+    this.store.loadUsuariosPerfiles(cdUsuario);
+    this.store.loadPerfiles();
   }
 
   private aplicarValidacionesPassword(esNuevo: boolean): void {

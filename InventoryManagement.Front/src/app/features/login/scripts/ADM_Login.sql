@@ -12,7 +12,6 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @cuenta NVARCHAR(50),
-            @password NVARCHAR(200),
             @ip NVARCHAR(64),
             @userAgent NVARCHAR(500),
             @modulo NVARCHAR(20) = 'ADM',
@@ -27,7 +26,6 @@ BEGIN
 
     SELECT
         @cuenta = COALESCE(dsLogin, cuenta),
-        @password = COALESCE(dsContraseña, password),
         @ip = ip,
         @userAgent = userAgent,
         @modulo = COALESCE(modulo, @modulo),
@@ -68,7 +66,7 @@ BEGIN
     END
 
     SELECT TOP 1 @cdUsuario = u.cdUsuario
-    FROM dbo.Usuarios u
+        FROM dbo.ADM_Usuarios u
     INNER JOIN dbo.ADM_UsuariosPerfiles up ON up.cdUsuario = u.cdUsuario
     INNER JOIN dbo.ADM_Perfiles p ON p.cdPerfil = up.cdPerfil
     WHERE u.dsLogin = @cuenta
@@ -150,15 +148,10 @@ BEGIN
 
     SELECT
         CONVERT(NVARCHAR(36), @uiSesion) AS sesion,
-        u.cdUsuario AS usuario,
         u.cdUsuario AS cdUsuario,
-        u.dsNombre AS nombre,
         u.dsNombre,
-        u.dsApellido AS apellido,
         u.dsApellido,
-        u.dsLogin AS login,
         u.dsLogin,
-        u.dsEmail AS email,
         u.dsEmail,
         u.dsContraseña,
         @cdSistema AS cdSistema,
@@ -209,7 +202,7 @@ BEGIN
             FOR JSON PATH
         )) AS roles,
         u.icActivo AS estado
-    FROM dbo.Usuarios u
+    FROM dbo.ADM_Usuarios u
     INNER JOIN dbo.SIS_Sistemas s ON s.cdSistema = @cdSistema
     WHERE u.cdUsuario = @cdUsuario
     FOR JSON PATH, WITHOUT_ARRAY_WRAPPER;

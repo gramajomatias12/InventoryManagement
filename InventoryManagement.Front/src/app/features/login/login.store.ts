@@ -59,7 +59,6 @@ constructor(
         }
 
         if (res?.usuario) {
-          console.log('[LOGIN] payload completo:', res);
           localStorage.setItem('user_data', JSON.stringify(res.usuario));
           this._currentUser.next(res.usuario);
         }

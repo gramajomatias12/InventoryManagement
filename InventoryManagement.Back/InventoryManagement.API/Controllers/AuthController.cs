@@ -95,6 +95,11 @@ namespace InventoryManagement.API.Controllers
                     return BadRequest("Contraseña incorrecta");
                 }
             }
+
+            // Nunca exponer hashes/password en el payload devuelto al frontend.
+            usuario.Remove("dsContraseña");
+            usuario.Remove("passwordHash");
+            usuario.Remove("hash");
             
             string login = GetString(usuario, "dsLogin", "login") ?? string.Empty;
             string perfil = ResolvePerfil(usuario);

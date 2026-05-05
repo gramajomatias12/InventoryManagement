@@ -15,11 +15,26 @@ BEGIN
 
         CONSTRAINT PK_ADM_UsuariosPerfiles PRIMARY KEY (cdUsuario, cdPerfil),
         CONSTRAINT FK_ADM_UsuariosPerfiles_Usuarios FOREIGN KEY (cdUsuario)
-            REFERENCES dbo.Usuarios (cdUsuario),
+            REFERENCES dbo.ADM_Usuarios (cdUsuario),
         CONSTRAINT FK_ADM_UsuariosPerfiles_Perfiles FOREIGN KEY (cdPerfil)
             REFERENCES dbo.ADM_Perfiles (cdPerfil)
     );
 END
+
+-- Corrige FK si ya existía apuntando a la tabla vieja dbo.Usuarios
+IF EXISTS (
+    SELECT 1 FROM sys.foreign_keys
+    WHERE name = 'FK_ADM_UsuariosPerfiles_Usuarios'
+      AND parent_object_id = OBJECT_ID('dbo.ADM_UsuariosPerfiles')
+)
+BEGIN
+    ALTER TABLE dbo.ADM_UsuariosPerfiles
+        DROP CONSTRAINT FK_ADM_UsuariosPerfiles_Usuarios;
+END
+
+ALTER TABLE dbo.ADM_UsuariosPerfiles
+    ADD CONSTRAINT FK_ADM_UsuariosPerfiles_Usuarios
+    FOREIGN KEY (cdUsuario) REFERENCES dbo.ADM_Usuarios (cdUsuario);
 GO
 
 IF NOT EXISTS (

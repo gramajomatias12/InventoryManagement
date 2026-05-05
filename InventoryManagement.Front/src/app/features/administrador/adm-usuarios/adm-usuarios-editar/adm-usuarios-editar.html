@@ -103,67 +103,82 @@
 
             <div class="separator-line"></div>
             <h3 class="section-title">Asignación de Perfiles por Sistema</h3>
-            <p class="section-description">Selecciona un sistema y asigna los perfiles que necesita el usuario</p>
+            <p class="section-description">Un usuario puede tener varios sistemas, pero solo un perfil por sistema.</p>
 
-            @if(form.value.cdUsuario){
-              <div class="accesos-actuales">
+            @if(!form.value.cdUsuario){
+              <p class="no-items">Guardá el usuario primero para poder asignar sistemas y perfiles.</p>
+            } @else {
+
+            <div class="acceso-nuevo-grid">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Sistema</mat-label>
+                <mat-select formControlName="cdSistema" (selectionChange)="onSistemaChange($event.value)">
+                  <mat-option [value]="null">-- Selecciona un sistema --</mat-option>
+                  <mat-option *ngFor="let sistema of (sistemas$ | async)" [value]="sistema.id">
+                    {{ sistema.descripcion }} ({{ sistema.prefijo }})
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Perfil del sistema</mat-label>
+                <mat-select [(ngModel)]="perfilSeleccionadoNuevo" [ngModelOptions]="{ standalone: true }" [disabled]="!form.value.cdSistema">
+                  <mat-option [value]="null">-- Selecciona un perfil --</mat-option>
+                  @for(perfil of getPerfilesDelSistema(form.value.cdSistema || 0); track perfil.cdPerfil){
+                    <mat-option [value]="perfil.cdPerfil">{{ perfil.dsPerfil }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-flat-button type="button" class="primary-action acceso-nuevo-btn" (click)="agregarSistemaConPerfil()" [disabled]="!form.value.cdUsuario || !form.value.cdSistema || !perfilSeleccionadoNuevo">
+                <mat-icon>add</mat-icon>
+                Agregar sistema
+              </button>
+            </div>
+
+            <div class="accesos-actuales">
                 <h4>Sistemas asignados al usuario</h4>
                 @if(getAccesosPorSistema().length > 0){
-                  @for(acceso of getAccesosPorSistema(); track acceso.sistema?.id){
+                  @for(acceso of getAccesosPorSistema(); track acceso.cdSistema){
                     <div class="sistema-bloque">
                       <div class="sistema-header">
                         <strong>{{ acceso.sistema?.descripcion || 'Sistema' }}</strong>
                         <span>{{ acceso.sistema?.prefijo || '' }}</span>
                       </div>
-                      @for(perfil of acceso.perfiles; track perfil.cdPerfil){
-                        <div class="perfil-chip">
-                          <div>
-                            <span class="perfil-name">{{ perfil.dsPerfil }}</span>
-                            <small class="perfil-roles">Roles: {{ getRolesDelPerfil(perfil.cdPerfil).join(', ') || 'Sin roles asociados' }}</small>
-                          </div>
+
+                      <div class="perfil-editor-grid">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Perfil asignado</mat-label>
+                          <mat-select
+                            [(ngModel)]="perfilSeleccionadoPorSistema[acceso.cdSistema]"
+                            [ngModelOptions]="{ standalone: true }"
+                            (selectionChange)="cambiarPerfilSistema(acceso.cdSistema, $event.value)">
+                            @for(perfil of getPerfilesDelSistema(acceso.cdSistema); track perfil.cdPerfil){
+                              <mat-option [value]="perfil.cdPerfil">{{ perfil.dsPerfil }}</mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+
+                        <button mat-stroked-button type="button" color="warn" (click)="quitarSistema(acceso.cdSistema)">
+                          <mat-icon>delete</mat-icon>
+                          Quitar sistema
+                        </button>
+                      </div>
+
+                      <div class="perfil-chip">
+                        <div>
+                          <span class="perfil-name">{{ acceso.perfil.dsPerfil }}</span>
+                          <small class="perfil-roles">Roles: {{ getRolesDelPerfil(acceso.perfil.cdPerfil).join(', ') || 'Sin roles asociados' }}</small>
                         </div>
-                      }
+                      </div>
                     </div>
                   }
                 } @else {
                   <p class="no-items">El usuario todavía no tiene sistemas/perfiles asignados</p>
                 }
               </div>
-            }
 
-            <mat-form-field class="full-width" appearance="outline">
-              <mat-label>Agregar acceso en sistema</mat-label>
-              <mat-select formControlName="cdSistema" (selectionChange)="onSistemaChange($event.value)">
-                <mat-option [value]="null">-- Selecciona un sistema --</mat-option>
-                <mat-option *ngFor="let sistema of (sistemas$ | async)" [value]="sistema.id">
-                  {{ sistema.descripcion }} ({{ sistema.prefijo }})
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            @if (perfiles$ | async; as perfiles) {
-              @if(perfiles.length > 0){
-                <div class="perfiles-grid">
-                  <h4>Perfiles Disponibles</h4>
-                  @for(perfil of perfiles; track perfil.cdPerfil){
-                    <div class="perfil-item">
-                      <mat-slide-toggle 
-                        [checked]="isPerfilAsignado(perfil.cdPerfil)"
-                        (change)="togglePerfilAsignado(perfil.cdPerfil, $event.checked)"
-                        [disabled]="!form.value.cdUsuario">
-                        {{ perfil.dsPerfil }}
-                      </mat-slide-toggle>
-                      @if(perfil.dsDescripcion){
-                        <p class="perfil-description">{{ perfil.dsDescripcion }}</p>
-                      }
-                      <p class="perfil-roles-inline">Roles del perfil: {{ getRolesDelPerfil(perfil.cdPerfil).join(', ') || 'Sin roles asociados' }}</p>
-                    </div>
-                  }
-                </div>
-              } @else {
-                <p class="no-items">No hay perfiles disponibles para el sistema seleccionado</p>
-              }
-            }
+            } <!-- end @else cdUsuario -->
 
             <div class="form-grid">
               <mat-form-field appearance="outline">

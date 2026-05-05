@@ -169,7 +169,7 @@ export class AdministradorStore {
   }
 
   deleteUsuarioPerfil(cdUsuario: number, cdPerfil: number) {
-    return this.data.postEntidad('UsuariosPerfiles_D', { cdUsuario, cdPerfil }, this.SISTEMA_ADM);
+    return this.data.postEntidad('UsuariosPerfiles', { cdUsuario, cdPerfil, icBorrado: true }, this.SISTEMA_ADM);
   }
 
   savePerfil(payload: { cdPerfil?: number; dsPerfil: string; cdSistema: number; dsDescripcion?: string; icBorrado?: boolean }) {

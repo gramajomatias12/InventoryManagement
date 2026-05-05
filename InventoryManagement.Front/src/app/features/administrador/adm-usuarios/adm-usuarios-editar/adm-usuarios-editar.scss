@@ -38,10 +38,31 @@
   border-radius: 999px;
 }
 
-.back-link {
+.back-link,
+.secondary-action {
+  --mdc-outlined-button-outline-color: rgba(255, 255, 255, 0.52);
+  --mdc-outlined-button-label-text-color: #f7fbff;
+  --mat-mdc-button-persistent-ripple-color: rgba(247, 251, 255, 0.26);
+}
+
+.back-link.mat-mdc-outlined-button,
+.secondary-action.mat-mdc-outlined-button {
   width: fit-content;
-  border-color: rgba(255, 255, 255, 0.16);
-  color: #f4f9ff;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  background: rgba(12, 30, 44, 0.28);
+  color: #f7fbff !important;
+  backdrop-filter: blur(3px);
+}
+
+.secondary-action.mat-mdc-outlined-button {
+  width: auto;
+}
+
+.back-link .mat-icon,
+.secondary-action .mat-icon,
+.back-link .mdc-button__label,
+.secondary-action .mdc-button__label {
+  color: #f7fbff !important;
 }
 
 .hero-main h1 {
@@ -66,11 +87,6 @@
 .primary-action {
   background: linear-gradient(135deg, #8ec8ff, #cfe4ff);
   color: #19354a;
-}
-
-.secondary-action {
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #f4f9ff;
 }
 
 .container {
@@ -185,6 +201,44 @@
   margin: 0 0 16px 0;
   font-size: 13px;
   color: #5a7484;
+}
+
+.acceso-nuevo-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.acceso-nuevo-btn {
+  grid-column: auto;
+  justify-self: start;
+  align-self: center;
+  min-height: 44px;
+  height: 44px;
+  padding-inline: 20px;
+}
+
+.perfil-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.back-link:hover,
+.secondary-action:hover,
+.btn-cancel:hover {
+  border-color: rgba(255, 255, 255, 0.78);
+  background: rgba(12, 30, 44, 0.42);
+}
+
+.back-link:focus-visible,
+.secondary-action:focus-visible,
+.btn-cancel:focus-visible {
+  outline: 2px solid rgba(199, 230, 255, 0.9);
+  outline-offset: 2px;
 }
 
 .perfiles-grid {
@@ -319,5 +373,18 @@
 
   .form-feedback {
     align-items: flex-start;
+  }
+
+  .perfil-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .acceso-nuevo-grid {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .acceso-nuevo-btn {
+    justify-self: stretch;
   }
 }

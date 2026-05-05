@@ -22,11 +22,15 @@ namespace InventoryManagement.API.Controllers
         public object Get(string entidad)
         {
             AccesoDatos db = new(_configuration);
-            
+
             // Construye: SIS_Usuarios_S o PAT_Categorias_S según el Header "Sistema"
             string spNombre = GetSistemaPrefix() + "_" + entidad + "_S";
 
-            Respuesta respuesta = db.Consultar(spNombre, "{}");
+            string uiSesion = GetSesionHeader();
+            string ip = GetRemoteIp();
+            string userAgent = GetUserAgent();
+
+            Respuesta respuesta = db.Consultar(spNombre, "{}", uiSesion, ip, userAgent);
 
             if (respuesta.isException) return BadRequest(respuesta.mensaje);
 
@@ -40,7 +44,11 @@ namespace InventoryManagement.API.Controllers
             AccesoDatos db = new(_configuration);
             string spNombre = GetSistemaPrefix() + "_" + entidad + "_S";
 
-            Respuesta respuesta = db.Consultar(spNombre, param);
+            string uiSesion = GetSesionHeader();
+            string ip = GetRemoteIp();
+            string userAgent = GetUserAgent();
+
+            Respuesta respuesta = db.Consultar(spNombre, param, uiSesion, ip, userAgent);
 
             if (respuesta.isException) return BadRequest(respuesta.mensaje);
 
@@ -62,7 +70,11 @@ namespace InventoryManagement.API.Controllers
             // Construye: SIS_Usuarios_IU o PAT_Categorias_IU
             string spNombre = GetSistemaPrefix() + "_" + entidad + "_IU";
 
-            Respuesta respuesta = db.Consultar(spNombre, data.jsonParametros);
+            string uiSesion = GetSesionHeader();
+            string ip = GetRemoteIp();
+            string userAgent = GetUserAgent();
+
+            Respuesta respuesta = db.Consultar(spNombre, data.jsonParametros, uiSesion, ip, userAgent);
 
             if (respuesta.isException)
             {
@@ -72,14 +84,33 @@ namespace InventoryManagement.API.Controllers
             return respuesta.Items; // Retorna el JSON que viene de SQL
         }
 
-        // --- MÉTODOS AUXILIARES ---
-
         private string GetSistemaPrefix()
         {
             // Intentamos leer el prefijo desde un Header (como hacés en el laburo)
             // Si no viene, usamos "ADM" por defecto
             var headerSistema = Request.Headers["Sistema"].ToString();
             return !string.IsNullOrEmpty(headerSistema) ? headerSistema : "ADM";
+        }
+
+        private string GetSesionHeader()
+        {
+            return Request.Headers["X-Session-Id"].ToString();
+        }
+
+        private string GetUserAgent()
+        {
+            return Request.Headers.UserAgent.ToString();
+        }
+
+        private string GetRemoteIp()
+        {
+            string? forwardedFor = Request.Headers["X-Forwarded-For"].ToString();
+            if (!string.IsNullOrWhiteSpace(forwardedFor))
+            {
+                return forwardedFor.Split(',')[0].Trim();
+            }
+
+            return HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
         }
 
         private string ProcesarPassword(string json)

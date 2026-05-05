@@ -64,8 +64,6 @@ export class AdmUsuarios implements OnInit {
     return Number(usuario?.cdUsuario || usuario?.id || 0);
   }
 
-  getRol(usuario: any): string {
-    return usuario?.dsRol || 'Sin rol';
-  }
+
 }
 

@@ -20,13 +20,39 @@ export class Data {
     return localStorage.getItem('sistema_prefijo') || 'ADM';
   }
 
+  private getSesionActual(): string {
+    const uiSesion = localStorage.getItem('ui_sesion');
+    if (uiSesion) {
+      return uiSesion;
+    }
+
+    const rawUser = localStorage.getItem('user_data');
+    if (!rawUser) {
+      return '';
+    }
+
+    try {
+      const user = JSON.parse(rawUser);
+      return String(user?.sesion || '');
+    } catch {
+      return '';
+    }
+  }
+
+  private buildHeaders(sistema?: string): Record<string, string> {
+    return {
+      'Sistema': sistema || this.getSistemaActual(),
+      'X-Session-Id': this.getSesionActual(),
+    };
+  }
+
   getEntidad(entidad: string, sistema?: string): Observable<any> {
-    const headers = { 'Sistema': sistema || this.getSistemaActual() };
+    const headers = this.buildHeaders(sistema);
     return this.http.get(`${this.urlApi}/${entidad}`, { headers });
   }
 
   postEntidad(entidad: string, objeto: any, sistema?: string): Observable<any> {
-    const headers = { 'Sistema': sistema || this.getSistemaActual() };
+    const headers = this.buildHeaders(sistema);
     const body = { jsonParametros: JSON.stringify(objeto) };
     return this.http.post(`${this.urlApi}/${entidad}`, body, { headers });
   }

@@ -74,14 +74,14 @@ BEGIN
 
     IF @cdUsuario IS NULL OR @cdUsuario = 0
     BEGIN
-        INSERT INTO dbo.Usuarios (dsLogin, dsContraseña, dsNombre, dsApellido, dsEmail, icActivo, dtCreacion)
+        INSERT INTO dbo.ADM_Usuarios (dsLogin, dsContraseña, dsNombre, dsApellido, dsEmail, icActivo, dtCreacion)
         VALUES (@dsLogin, @dsPassword, @dsNombre, @dsApellido, @dsEmail, @icActivo, GETDATE());
 
         SET @cdUsuario = SCOPE_IDENTITY();
     END
     ELSE
     BEGIN
-        UPDATE dbo.Usuarios
+        UPDATE dbo.ADM_Usuarios
         SET dsLogin = @dsLogin,
             dsContraseña = ISNULL(@dsPassword, dsContraseña),
             dsNombre = @dsNombre,

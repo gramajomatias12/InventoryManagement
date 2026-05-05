@@ -6,7 +6,18 @@ import { HttpInterceptorFn } from '@angular/common/http';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('token');
   const sistema = localStorage.getItem('sistema_prefijo') || 'ADM';
-  const uiSesion = localStorage.getItem('ui_sesion') || '';
+  const rawUser = localStorage.getItem('user_data');
+  let sesionDesdeUsuario = '';
+
+  if (rawUser) {
+    try {
+      sesionDesdeUsuario = String(JSON.parse(rawUser)?.sesion || '');
+    } catch {
+      sesionDesdeUsuario = '';
+    }
+  }
+
+  const uiSesion = localStorage.getItem('ui_sesion') || sesionDesdeUsuario;
   const headers: Record<string, string> = {};
 
   // Si tenemos token, agregamos header Bearer

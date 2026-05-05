@@ -45,21 +45,34 @@ BEGIN
         RETURN;
     END;
 
-        DECLARE @cdUsuario INT,
+    DECLARE @cdUsuario INT,
             @cdPerfil INT,
             @dsDatos NVARCHAR(MAX),
-            @cdSistema INT;
+            @cdSistema INT,
+            @icBorrado BIT = 0;
 
     SELECT
         @cdUsuario = cdUsuario,
         @cdPerfil = cdPerfil,
-        @dsDatos = dsDatos
+        @dsDatos = dsDatos,
+        @icBorrado = ISNULL(icBorrado, 0)
     FROM OPENJSON(@jsParametro)
     WITH (
         cdUsuario INT,
         cdPerfil INT,
-        dsDatos NVARCHAR(MAX)
+        dsDatos NVARCHAR(MAX),
+        icBorrado BIT
     );
+
+    IF @icBorrado = 1
+    BEGIN
+        DELETE FROM dbo.ADM_UsuariosPerfiles
+        WHERE cdUsuario = @cdUsuario
+          AND cdPerfil = @cdPerfil;
+
+        SELECT @cdUsuario AS cdUsuario, @cdPerfil AS cdPerfil, CAST(1 AS BIT) AS icBorrado FOR JSON PATH;
+        RETURN;
+    END;
 
     SELECT @cdSistema = p.cdSistema
     FROM dbo.ADM_Perfiles p

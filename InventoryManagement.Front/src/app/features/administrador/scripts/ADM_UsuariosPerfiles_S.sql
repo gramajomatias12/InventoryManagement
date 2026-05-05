@@ -78,7 +78,7 @@ BEGIN
             s.dsSistema AS dsSistema,
             up.dsDatos
         FROM dbo.ADM_UsuariosPerfiles up
-        INNER JOIN dbo.Usuarios u ON u.cdUsuario = up.cdUsuario
+                INNER JOIN dbo.ADM_Usuarios u ON u.cdUsuario = up.cdUsuario
         INNER JOIN dbo.ADM_Perfiles p ON p.cdPerfil = up.cdPerfil
         INNER JOIN dbo.SIS_Sistemas s ON s.cdSistema = p.cdSistema
         WHERE (@cdUsuario IS NULL OR up.cdUsuario = @cdUsuario)
