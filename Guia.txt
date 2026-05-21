@@ -1,0 +1,410 @@
+GUIA DE ESTUDIO REESCRITA SEGUN EL PROYECTO REAL
+
+MES 3 - Backend .NET + SQL Server en serio
+
+Objetivo
+Sentirte comodo leyendo, modificando y defendiendo un backend mas serio, donde la logica importante ya no vive solo en Angular sino tambien en ASP.NET Core, SQL Server y los stored procedures que controlan autenticacion, permisos y operaciones por sistema.
+
+Que use realmente en este proyecto
+
+Backend (.NET)
+- ASP.NET Core Web API en .NET 8.
+- JWT para autenticacion.
+- TokenService para emitir tokens con claims.
+- ADO.NET para ejecutar stored procedures.
+- Controlador de autenticacion con login y logout.
+- Controlador generico de entidades por prefijo de sistema.
+- Lectura de headers personalizados como Sistema y X-Session-Id.
+- Envio dinamico de parametros de seguridad a SQL si el stored procedure los soporta.
+- BCrypt para validacion y hash de contraseñas.
+- Swagger y CORS para desarrollo.
+
+Frontend (Angular)
+- Angular 20.
+- Componentes standalone.
+- Angular Router con lazy loading por modulo.
+- Guards de autenticacion y permisos.
+- Interceptors para auth, loading y errores.
+- Estado simple con BehaviorSubject en stores.
+- Shell dinamico con menu segun el sistema actual.
+- Formularios reactivos.
+- Angular Material para UI.
+- Persistencia de token, sesion y sistema seleccionado en localStorage.
+
+Base de datos (SQL Server)
+- Base central con tablas ADM, PAT y AUTH.
+- Stored procedures por convencion de prefijos.
+- Login por sistema con procedimientos separados.
+- Auditoria de sesiones y accesos.
+- Perfiles, roles y asignaciones por sistema.
+- Categorias y proveedores dentro del modulo Patrimonio.
+
+Importante
+Este proyecto no siguio exactamente el plan original del mes 3.
+No terminaste armando un backend con DTOs, EF Core avanzado, paginacion real ni dashboard de metricas.
+Lo que hiciste fue otra cosa, y bastante valiosa: construiste una base backend mucho mas cercana a un sistema empresarial, con autenticacion multi-sistema, permisos, auditoria de sesiones, stored procedures con contexto de seguridad y una estructura preparada para crecer por modulos.
+
+Proyecto 3
+Sistema de Inventario y Patrimonio
+
+Objetivo del proyecto
+Demostrar que sabes trabajar con un backend mas serio y con una base SQL mas rica, donde la aplicacion no es un CRUD aislado sino una solucion modular con autenticacion, control de permisos, sesiones auditadas y logica de negocio delegada a stored procedures por sistema.
+
+Descripcion del proyecto
+Sistema de Gestion de Inventario y Patrimonio es una aplicacion modular compuesta por un frontend Angular y una API en ASP.NET Core. El acceso se realiza desde un login comun que permite entrar a distintos sistemas, como Administrador y Patrimonio. El backend identifica el sistema actual mediante un prefijo, ejecuta el stored procedure correspondiente y propaga informacion de seguridad como sesion, IP y User-Agent para que SQL Server pueda validar permisos y auditar acciones.
+
+Que construiste realmente en este proyecto
+- Login multi-sistema.
+- Seleccion de sistema antes de iniciar sesion.
+- JWT con claims de perfil y sistema.
+- Logout con cierre de sesion en base.
+- Propagacion de sesion autenticada desde frontend a backend.
+- Auditoria de accesos y operaciones en tablas AUTH.
+- Administracion de sistemas, usuarios, perfiles y roles.
+- Asignacion de perfiles a usuarios.
+- Modulo Patrimonio con categorias y proveedores.
+- Menus y rutas dinamicas por sistema.
+- Validacion de permisos tanto en Angular como en SQL.
+
+Que estudiaste de verdad en este proyecto
+
+Backend serio
+- Como construir una API basada en convenciones y prefijos por sistema.
+- Como emitir tokens JWT con claims personalizados.
+- Como manejar login y logout reales contra SQL Server.
+- Como registrar sesiones y cierres de sesion en base.
+- Como pasar contexto de seguridad a stored procedures.
+- Como detectar si un SP acepta parametros opcionales antes de enviarlos.
+- Como delegar autenticacion y permisos a procedimientos almacenados.
+- Como sostener una solucion escalable sin depender de EF Core.
+
+SQL Server en serio
+- Estructura de tablas de seguridad y administracion.
+- Modelado de usuarios, perfiles, roles y sus relaciones.
+- Auditoria de accesos mediante tablas AUTH.
+- Uso de prefijos por sistema para separar modulos.
+- Stored procedures por operacion y por modulo.
+- Manejo de JSON entre .NET y SQL.
+
+Angular de soporte a backend serio
+- Shell comun para multiples sistemas.
+- Router con lazy loading por modulo.
+- Guards de autenticacion y permisos.
+- Interceptors que agregan token, sistema y session id.
+- Stores con BehaviorSubject para sostener estado compartido.
+- Interfaces separadas por sistema pero dentro de una sola SPA.
+
+Proyecto real vs plan original
+En el plan habias pensado:
+- DTOs.
+- EF Core avanzado.
+- Stored procedures + consumo desde .NET.
+- Manejo de errores.
+- Paginacion y filtros.
+- Bienes, categorias, proveedores y reportes.
+
+En el proyecto real avanzaste por otra linea:
+- No usaste EF Core ni DTOs como eje central.
+- Si usaste stored procedures y consumo desde .NET de manera intensiva.
+- Si trabajaste manejo de errores, auth, sesiones y permisos.
+- No aparece paginacion real implementada.
+- No aparece todavia el ABM de bienes ni dashboard de metricas.
+- Si estan implementados categorias y proveedores para Patrimonio.
+- Si esta muy desarrollado el modulo Administrador con seguridad multi-sistema.
+
+Modelo de datos real
+
+Tablas principales detectadas en la base
+
+Administracion
+- ADM_Sistemas
+- ADM_Usuarios
+- ADM_Perfiles
+- ADM_Roles
+- ADM_PerfilesRoles
+- ADM_UsuariosPerfiles
+
+Autenticacion y auditoria
+- AUTH_Sesiones
+- AUTH_LogAcceso
+- AUTH_UserAgent
+
+Patrimonio
+- PAT_Categorias
+- PAT_Proveedores
+
+Tambien aparecen tablas heredadas o de ejercicios anteriores
+- Tareas
+- Usuarios
+- Roles
+- SIS_Sistemas
+
+Datos semilla relevantes detectados
+- Sistemas: Patrimonio (PAT), Administrador (ADM) y Personal (PER dado de baja).
+- Perfiles: PAT_ADM, PAT_USU, ADM_ADM, PAT_DEP.
+- Roles: PAT_ADM, PAT_USU, ADM_ADM, PAT_DEP.
+- Usuarios administrativos ya cargados con contraseñas hasheadas.
+- Relaciones usuario-perfil y perfil-rol ya precargadas.
+
+Que demuestra este modelo
+- Entendiste separacion por sistema y no solo por pantalla.
+- Modelaste permisos mediante perfiles y roles, no con flags simples.
+- Sumaste trazabilidad de sesiones y auditoria de operaciones.
+
+Convencion real del backend
+- Login por sistema: {PREFIJO}_Login
+- Consulta de entidad: {PREFIJO}_{Entidad}_S
+- Alta o actualizacion: {PREFIJO}_{Entidad}_IU
+- Cierre de sesion: AUTH_CerrarSesion_IU
+- Parametros de seguridad opcionales: @uiSesion, @ip, @userAgent
+
+Arquitectura real del backend
+Estructura principal
+- Controllers/AuthController.cs
+- Controllers/EntidadController.cs
+- Classes/AccesoDatos.cs
+- Classes/TokenService.cs
+- Models/PeticionGenerica.cs
+- Models/Respuesta.cs
+- Program.cs
+- appsettings.json
+
+Que hace cada parte
+- AuthController resuelve login por sistema, genera JWT y registra/cierra sesiones.
+- EntidadController arma el nombre del stored procedure segun el sistema y la entidad.
+- AccesoDatos ejecuta SPs y detecta si soportan parametros opcionales de seguridad.
+- TokenService emite el token con claims de usuario, perfil y sistema.
+
+Flujo real de autenticacion
+1. El usuario selecciona un sistema en la pantalla de login.
+2. Angular envia credenciales a POST /api/Auth/login con el header Sistema.
+3. El backend ejecuta el procedimiento de login correspondiente, por ejemplo ADM_Login o PAT_Login.
+4. Si el login es correcto, el backend genera el JWT y registra una sesion en AUTH.
+5. Angular guarda token, usuario, sesion y sistema actual en localStorage.
+6. Los interceptors propagan Authorization, Sistema y X-Session-Id en las peticiones.
+7. Al hacer logout, Angular llama a POST /api/Auth/logout y SQL cierra la sesion.
+
+Seguridad real implementada
+- JWT para autenticacion.
+- Guard de autenticacion para rutas protegidas.
+- Guard de permisos por roles requeridos en cada ruta.
+- PermissionService para resolver roles desde distintas estructuras del usuario.
+- Interceptor que agrega token, prefijo del sistema y session id.
+- Backend que reenvia sesion, IP y User-Agent a SQL cuando corresponde.
+- Validacion de contraseñas con BCrypt.
+- Auditoria de login, logout y operaciones administrativas.
+
+Arquitectura real del frontend
+src/app
+- core
+  - auth.guard.ts
+  - auth.interceptor.ts
+  - error.interceptor.ts
+  - loading.interceptor.ts
+  - loading.ts
+  - notify.ts
+  - data.ts
+  - permission.service.ts
+  - system-routes.ts
+- features
+  - login
+  - administrador
+  - patrimonio
+- shared
+  - confirm-dialog
+- app.routes.ts
+- app.config.ts
+- app.ts
+
+Que demuestra esta arquitectura
+- La aplicacion esta pensada para varios sistemas dentro de una misma SPA.
+- El modulo activo cambia segun el sistema elegido en login.
+- Hay separacion clara entre infraestructura, modulos funcionales y componentes compartidos.
+
+Modulos reales implementados
+
+Login
+- Login comun para varios sistemas.
+- Carga de sistemas disponibles desde backend.
+- Redireccion automatica segun el prefijo del sistema elegido.
+- Persistencia de sesion y ultimo sistema usado.
+
+Administrador
+- Gestion de sistemas.
+- Gestion de usuarios.
+- Soporte de store para roles, perfiles, perfiles-roles y usuarios-perfiles.
+- Restriccion por permiso ADM_ADM.
+
+Patrimonio
+- Pantalla de inicio del modulo.
+- Gestion de categorias.
+- Gestion de proveedores.
+- Rutas protegidas por permisos PAT_ADM y PAT_USU.
+- Filtros simples en frontend por texto.
+
+Aclaracion importante sobre alcance funcional
+El plan del mes 3 hablaba de bienes, reportes, paginacion y dashboard.
+Eso no aparece implementado todavia en este proyecto.
+Lo que si aparece es la base funcional y de seguridad para que ese sistema pueda crecer despues con mucha mejor estructura.
+
+Stores reales
+
+LoginStore
+Maneja
+- currentUser
+- login
+- logout
+- persistencia de sesion y token
+
+AdministradorStore
+Maneja
+- sistemas
+- usuarios
+- roles
+- roles administrativos
+- perfiles
+- usuariosPerfiles
+- perfilesRoles
+
+PatrimonioStore
+Maneja
+- categorias
+- proveedores
+
+Pantallas reales del proyecto
+
+Pantalla de login
+- Usuario.
+- Contraseña.
+- Selector de sistema.
+- Validaciones basicas.
+- Feedback de error y exito.
+
+Shell principal
+- Toolbar con nombre del sistema actual.
+- Progreso global cuando hay requests.
+- Menu lateral dinamico segun el modulo.
+- Logout.
+
+Modulo Administrador
+- Lista y edicion de sistemas.
+- Lista y edicion de usuarios.
+- Gestion indirecta de perfiles y roles a traves del store y pantallas asociadas.
+
+Modulo Patrimonio
+- Panel de inicio.
+- Lista y edicion de categorias.
+- Lista y edicion de proveedores.
+- Busqueda por texto en frontend.
+
+Stored procedures y scripts relevantes detectados
+
+Autenticacion
+- ADM_Login
+- PAT_Login
+- AUTH_RegistrarSesion_IU
+- AUTH_CerrarSesion_IU
+- AUTH_Sesiones
+- AUTH_Sesiones_S
+- AUTH_LogAcceso
+- AUTH_LogAcceso_IU
+- AUTH_UserAgent
+
+Administrador
+- ADM_Usuarios_S
+- ADM_Usuarios_IU
+- ADM_Sistemas_S
+- ADM_Sistemas_IU
+- ADM_Perfiles_S
+- ADM_Perfiles_IU
+- ADM_Roles_S
+- ADM_Roles_IU
+- ADM_PerfilesRoles_S
+- ADM_PerfilesRoles_IU
+- ADM_PerfilesRoles_D
+- ADM_UsuariosPerfiles_S
+- ADM_UsuariosPerfiles_IU
+- ADM_UsuariosPerfiles_D
+
+Patrimonio
+- PAT_Categorias_S
+- PAT_Categorias_IU
+- PAT_Proveedores_S
+- PAT_Proveedores_IU
+
+Manejo de errores y UX real
+- Loader global con interceptor.
+- Error interceptor para mensajes centralizados.
+- Notify service para feedback al usuario.
+- Logout aun si el cierre en DB falla, para no bloquear al usuario del lado cliente.
+- Validaciones de formularios en alta y edicion.
+
+Plan semanal reescrito segun este proyecto
+
+Semana 1
+- Diseñar la base de autenticacion y administracion.
+- Crear login por sistema.
+- Configurar JWT, claims y token service.
+- Resolver la convencion por prefijo para llamar stored procedures.
+
+Semana 2
+- Registrar sesiones y auditoria en SQL.
+- Propagar contexto de seguridad desde frontend a backend.
+- Crear el controlador generico de entidades.
+- Incorporar interceptors y guards.
+
+Semana 3
+- Desarrollar el modulo Administrador.
+- Gestionar usuarios, sistemas, perfiles y roles.
+- Resolver asignaciones entre usuarios y perfiles.
+- Filtrar accesos con permissionGuard y PermissionService.
+
+Semana 4
+- Crear el modulo Patrimonio sobre la infraestructura ya armada.
+- Implementar categorias y proveedores.
+- Ajustar UX, shell, menus y stores.
+- Dejar la solucion lista para seguir creciendo con bienes y reportes.
+
+Resultado esperado al final del mes
+- Mucha mas comodidad leyendo backend y SQL real.
+- Dominio mayor de stored procedures y convenciones por sistema.
+- Login, logout y sesiones reales con trazabilidad.
+- Permisos mas serios que un simple admin/user.
+- Backend preparado para escalar por modulos.
+- SPA Angular conectada a un backend con seguridad y auditoria.
+- Base firme para luego sumar bienes, reportes y filtros mas avanzados.
+
+Como defender este proyecto en entrevista
+"En este proyecto me enfoque en construir una base backend mas seria, orientada a multiples sistemas dentro de una misma aplicacion. En lugar de un CRUD simple, implemente login por sistema, JWT, sesion auditada en SQL Server y una convencion de stored procedures por prefijo para desacoplar modulos. El backend propaga contexto de seguridad como sesion, IP y User-Agent a los procedimientos almacenados, y el frontend consume todo desde una SPA con rutas lazy, guards e interceptors. El modulo funcional de Patrimonio ya incluye categorias y proveedores, mientras que el modulo Administrador resuelve sistemas, usuarios, perfiles y roles." 
+
+Que podes decir que aprendiste
+- Me siento comodo leyendo y modificando backend .NET.
+- Entiendo mejor como se conecta auth, API y SQL Server.
+- Puedo trabajar con stored procedures mas serios y convenciones por modulo.
+- Aprendi a modelar permisos con perfiles y roles.
+- Ya no pienso solo en CRUD, sino en seguridad, sesiones y trazabilidad.
+- Puedo armar una solucion preparada para crecer por sistemas.
+
+Diferencia con los proyectos anteriores
+Proyecto 1
+- Demuestra conexion Full Stack basica entre Angular, .NET y SQL.
+
+Proyecto 2
+- Demuestra un frontend mas profesional con auth, guards, interceptors y estado.
+
+Proyecto 3
+- Demuestra backend mas serio, seguridad, auditoria, permisos multi-sistema y una base SQL mucho mas rica.
+
+README recomendado para este proyecto
+Secciones sugeridas
+- Descripcion general de la solucion.
+- Arquitectura por modulos.
+- Flujo de autenticacion por sistema.
+- Seguridad y auditoria.
+- Modulos implementados.
+- Scripts SQL principales.
+- Como levantar backend y frontend.
+- Estado actual y proximos pasos del modulo Patrimonio.
+
+Conclusion
+Este proyecto pesa mas en entrevistas no porque tenga el CRUD mas grande, sino porque muestra que ya podes moverte en un entorno mas parecido al real: backend con convenciones, autenticacion multi-sistema, auditoria, permisos, stores, guards, interceptors y SQL Server resolviendo parte importante de la logica. Aunque todavia no tenga bienes, reportes o paginacion real, la base tecnica que construiste es claramente mas madura que en los proyectos anteriores.
